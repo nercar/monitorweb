@@ -1,0 +1,1034 @@
+<!-- Main row -->
+<div class="row">
+	<!-- Auditoria de Costos -->
+	<div class="col-md-12 col-sm-12 mt-2" id="div_tbl_datos">
+		<div class="card card-primary m-0 p-0 elevation-2 border border-dark">
+			<div class="card-header d-flex p-1 pl-2 mb-1 align-items-baseline">
+				<i class="fas fa-file-alt"></i>&nbsp;
+				<span id="ttitulo">Prefactura OnLine</span>
+			</div>
+			<div class="row m-0 pl-1 pr-1 pb-1">
+				<div class="col-md-3 col-xl-3 col-sm-12 col-12">
+					<form action="" onsubmit="return false;">
+						<div class="bg-dark-gradient text-center">Datos del Cliente</div>
+						<label class="m-0 mt-1 p-0" for="idclte">Identificación</label>
+						<div class="d-flex">
+							<select id="cedulasid"></select>
+							<input style="display: none;" placeholder="Ingrese Número Identidad">
+							<input type="number" id="idclte"
+								onkeydown="if(event.keyCode==13) { $('#nomclte').focus() };" 
+								onblur="if(this.value!='' && $('#nomclte').val()=='') { consultarClte(this.value) }"
+								placeholder="Ingrese Número Identidad" class="m-0 p-0 w-100">
+						</div>
+
+						<label class="m-0 mt-1 p-0" for="nomclte">Nombre Cliente</label>
+						<div class="d-flex">
+							<input style="display: none;" placeholder="Ingrese Nombre del Cliente">
+							<input type="text" id="nomclte"
+								onkeydown="if(event.keyCode==13) { $('#telclte').focus().select() }; sinCarEspec();"
+								placeholder="Ingrese Nombre del Cliente" class="m-0 p-0 w-100">
+						</div>
+
+						<label class="m-0 mt-1 p-0" for="telclte">Teléfono del Cliente</label>
+						<div class="d-flex">
+							<input style="display: none;" placeholder="Ingrese Teléfono del Cliente">
+							<input type="text" id="telclte"
+								onkeydown="if(event.keyCode==13) { $('#emailclte').focus().select() }; sinCarEspec();"
+								placeholder="Ingrese Teléfono del Cliente" class="m-0 p-0 w-100">
+						</div>
+
+						<label class="m-0 mt-1 p-0" for="emailclte">Correo del Cliente</label>
+						<div class="d-flex">
+							<input style="display: none;" placeholder="Ingrese Correo del Cliente">
+							<input type="email" id="emailclte"
+								onkeydown="if(event.keyCode==13) { $('#dirclte').focus().select() }; sinCarEspec();"
+								placeholder="Ingrese Correo del Cliente" class="m-0 p-0 w-100">
+						</div>
+
+						<label class="m-0 mt-1 p-0" for="dirclte">Dirección del Cliente</label>
+						<div class="d-flex">
+							<input style="display: none;" placeholder="Ingrese Dirección del Cliente">
+							<input type="text" id="dirclte"
+								onkeydown="if(event.keyCode==13) { $('#BuscarArti').focus().select() }; sinCarEspec();"
+								placeholder="Ingrese Dirección del Cliente" class="m-0 p-0 w-100">
+						</div>
+						<br>
+						<table width="100%" class="m-0 p-0" cellpadding="0" cellspacing="0">
+							<tr>
+								<th>Total Ítems</th>
+								<td align="right" id="tarticulo"></td>
+							</tr>
+							<tr>
+								<th>Total Und./Kg</th>
+								<td align="right" id="tcantidad"></td>
+							</tr>
+							<tr>
+								<th>Monto</th>
+								<td align="right" id="tmonto"></td>
+							</tr>
+						</table>
+						<div id="tbldivisas"></div>
+						<br>
+					</form>
+				</div>
+				<div class="col-md-9 col-xl-9 col-sm-12 col-12">
+					<div class="d-flex w-100 align-baseline">
+						<table class="w-100 table-bordered">
+							<tr class="bg-dark text-center">
+								<th rowspan="2" width="20%">Buscar por:</th>
+								<th>Artículos</th>
+								<th>Grupos</th>
+							</tr>
+							<tr>
+								<td>
+									<input type="text" style="display: none;" placeholder="Buscar Artículo">
+									<input type="text" class="form-control form-control-sm m-0 p-1"
+										value="" placeholder="Buscar Artículo" id="BuscarArti" 
+										onfocus="validarDatosCte()" 
+										onkeydown="if(event.keyCode==13 && $(this).val().trim()!='') {
+											lstArticulos(1);
+										}">
+								</td>
+								<td>
+									<input type="text" style="display: none;" placeholder="Buscar Grupos">
+									<input type="text" class="form-control form-control-sm m-0 p-1"
+										value="" placeholder="Buscar Grupos" id="BuscarGrp"
+										onfocus="validarDatosCte()" 
+										onkeydown="if(event.keyCode==13 && $(this).val().trim()!='') {
+											lstArticulos(2);
+										}">
+								</td>
+							</tr>
+						</table>
+					</div>
+					<form action="" onsubmit="return false;" class="p-0 m-0" id="frmarticulos">
+						<table width="100%" id="tbl_consultaDispo" cellpadding="0" cellspacing="0"
+							class="table table-striped table-hover table-bordered m-0 p-0">
+							<thead>
+								<tr class="bg-warning-gradient">
+									<th width="15%" class="text-center txtcomp p-0 m-0">Barra</th>
+									<th width="45%" class="text-center txtcomp p-0 m-0">Descripción</th>
+									<th width="15%" class="text-center txtcomp p-0 m-0">Precio</th>
+									<th width="15%" class="text-center txtcomp p-0 m-0">Disponible</th>
+									<th width="10%" class="text-center txtcomp p-0 m-0">Cantidad</th>
+								</tr>
+							</thead>
+						</table>
+					</form>
+					<div class="col-12 d-flex">
+						<div class="col-12 d-flex align-items-baseline m-0 pb-0 pt-1">
+							<div class="col-4 m-0 p-0 justify-content-center d-flex">
+								<button class="btn btn-sm btn-warning mr-auto d-none" onclick="calDivisas()" id="otrDivisas">
+									<i class="fas fa-dollar-sign"></i> Otras Divisas
+								</button>
+							</div>
+							<div class="col-4 m-0 p-0 justify-content-center d-flex">
+								<button class="btn btn-sm btn-danger mr-auto ml-auto" onclick="limpiarFiltros()">
+									<i class="fas fa-broom"></i> Cancelar
+								</button>
+							</div>
+							<div class="col-4 m-0 p-0 justify-content-center d-flex">
+								<button class="btn btn-sm btn-success ml-auto" disabled onclick="savDoc()" id="guardarPrefactura">
+									<i class="fas fa-save"></i> Guardar Pre-factura
+								</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- /.card-body -->
+		</div>
+	</div>
+	<!-- /.col -->
+</div>
+<!-- /.row (main row 2) -->
+
+<!-- campos temporales -->
+<input type="hidden" id="horah">
+<input type="hidden" id="montototal" value="0">
+<input type="hidden" id="idtemporal" value="0">
+<input type="hidden" id="adtemporal" value="0">
+
+<!-- Modal lista de articulos -->
+<div class="modal fade" id="TblArt" style="z-index: 9888;" tabindex="-1" role="dialog" aria-labelledby="TblArtLabel" aria-hidden="true">
+	<div class="modal-dialog modal-lg modal-dialog-centered">
+		<!-- Modal content-->
+		<div class="modal-content">
+			<div class="modal-header bg-primary pt-1 pb-1">
+				<h4 class="modal-title">Seleccione un Artículo para Agregar</h4>
+			</div>
+			<div class="modal-body p-1" id="contTblArt">
+				<form action="" onsubmit="return false;" class="form-inline col-12 p-0 m-0 mt-2">
+					<div class="d-flex w-100 align-content-center justify-content-center ml-2 mr-2">
+						<span class="col-1 font-weight-bold">Buscar: </span>
+						<input type="text" class="form-control form-control-sm m-0 ml-1 mr-l p-1 col-11"
+							id="buscarTblArt" value="" autocomplete="off" 
+							placeholder="Buscar Artículo en la Lista...">
+					</div>
+				</form>
+				<table id="tlstArticulos" class="w-100 table table-striped table-hover table-bordered">
+					<thead>
+						<tr>
+							<th width="20%" class="txtcomp text-center bg-warning-gradient">Barra</th>
+							<th width="60%" class="txtcomp text-center bg-warning-gradient">Descripción</th>
+							<th width="10%" class="txtcomp text-center bg-warning-gradient">Precio</th>
+							<th width="10%" class="txtcomp text-center bg-warning-gradient">Exist.</th>
+						</tr>
+					</thead>
+				</table>
+			</div>
+			<div class="modal-footer pt-2 pb-2 align-items-end justify-content-end align-top">
+				<button class="btn btn-outline-danger col-3" class="close" data-dismiss="modal" id="btncerrar">
+					Cerrar <i class="fas fa-times-circle"></i>
+				</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- Modal Detalle de la PreFactura -->
+<div class="modal fade" id="VerPre" style="z-index: 9888;" tabindex="-1" role="dialog" aria-labelledby="VerPreLabel" aria-hidden="true">
+	<div class="modal-dialog modal-lg modal-dialog-centered">
+		<!-- Modal content-->
+		<div class="modal-content">
+			<div class="modal-header bg-primary pt-1 pb-1">
+				<h4 class="modal-title">Detalle de la Prefactura</h4>
+				<button type="button" data-dismiss="modal" aria-label="Close" class="btn btn-danger btn-lg float-right">
+					<span class="fas fa-window-close float-right" aria-hidden="true"></span>
+				</button>
+			</div>
+			<div class="modal-body mb-0 pb-2" id="contVerPre">
+				<div class="row" id="frmcabecera">
+				</div>
+				<div class="row" id="tblDet">
+					<table id="detalleFactura" cellpadding="0" cellspacing="0"
+						class="table table-striped table-hover table-bordered w-100 m-0 p-0">
+						<thead class="bg-primary-gradient">
+							<tr style="vertical-align: middle">
+								<th width="55%">Articulo</th>
+								<th width="10%">Cantidad</th>
+								<th width="15%">Precio</th>
+								<th width="5%" >%IVA</th>
+								<th width="15%">Total</th>
+							</tr>
+						</thead>
+					</table>
+				</div>
+				<table width="100%" align="center" class="m-0 p-0" cellpadding="0" cellspacing="0">
+					<tr>
+						<th class="bg-dark-gradient w-25 text-center">Ítems</th>
+						<th class="bg-dark-gradient w-25 text-center">Unds/Kgs</th>
+						<th class="bg-dark-gradient w-50 text-center">Monto</th>
+					</tr>
+					<tr>
+						<th class="bg-warning-gradient w-25 text-center" id="rtarticulo"></th>
+						<th class="bg-warning-gradient w-25 text-center" id="rtcantidad"></th>
+						<th class="bg-warning-gradient w-50 text-center" id="rtmonto"></th>
+					</tr>
+				</table>
+			</div>
+			<div class="modal-footer alert-secondary d-flex m-0 p-2 justify-content-end">
+				<button class="btn btn-sm btn-primary mr-auto" data-dismiss="modal" aria-label="Close"
+					onclick="recuperar(1, 0)">
+					Recuperar Pre-Factura
+				</button>
+				<button class="btn btn-sm btn-danger ml-auto" data-dismiss="modal" aria-label="Close"
+					onclick="recuperar(0, 1);">
+					No Recuperar
+				</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+	var cabecera = new Array();
+	var detalle = new Array();
+	var data = new Array();
+
+	$('.modal').modal({backdrop: 'static', keyboard: false, show: false})
+	$('.modal').on('hidden.bs.modal', function() { 
+		// se restaura el index del backdrop
+		$('.modal-backdrop').css('zIndex', 8888);
+	});
+	$('#VerPre').on('shown.bs.modal', function() {
+		$('#tblDet').css( 'display', 'block' );
+		$('#detalleFactura').DataTable().columns.adjust().draw();
+	})
+	$('input').on('keyup', function(event) {
+		if(event.keyCode>=97 && event.keyCode <=122) {
+			return String.fromCharCode(event.Keycode).toUpperCase()
+		}
+	})
+	$('input').on('blur', function(event) {
+
+		$(this).val( $(this).val().toUpperCase() )
+	})
+	$("#buscarTblArt").keyup(function(e) {
+		// Buscar en la tabla
+		$('#tlstArticulos').dataTable().fnFilter(this.value);
+	});
+	$('#TblArt').on('shown.bs.modal', function() {
+		// buscar
+		$("#buscarTblArt").val('').focus();
+	})
+
+	jQuery.fn.dataTableExt.oApi.fnFilterClear  = function ( oSettings ) {
+		var i, iLen;
+	 
+		/* Remove global filter */
+		oSettings.oPreviousSearch.sSearch = "";
+	 
+		/* Remove the text of the global filter in the input boxes */
+		if ( typeof oSettings.aanFeatures.f != 'undefined' )
+		{
+			var n = oSettings.aanFeatures.f;
+			for ( i=0, iLen=n.length ; i<iLen ; i++ )
+			{
+				$('input', n[i]).val( '' );
+			}
+		}
+	 
+		/* Remove the search text for the column filters - NOTE - if you have input boxes for these
+		 * filters, these will need to be reset
+		 */
+		for ( i=0, iLen=oSettings.aoPreSearchCols.length ; i<iLen ; i++ )
+		{
+			oSettings.aoPreSearchCols[i].sSearch = "";
+		}
+	 
+		/* Redraw */
+		oSettings.oApi._fnReDraw( oSettings );
+	};
+
+	$.ajax({
+		url: "app/DBProcs.php",
+		data: {
+			opcion: "cedulasid",
+		},
+		type: "POST",
+		dataType: "json",
+		success : function(data) {
+			for (i=0; i<data.length; i++) {
+				$("#cedulasid").append('<option value="'+ data[i].id + '" title="ID: ' + '[' + data[i].id + '] ' + '">' + data[i].descripcion + '</option>');
+			}
+		}
+	})
+		
+	$('#idclte').focus();
+
+	$.ajax({
+		url: "app/DBProcs.php",
+		data: {
+			opcion: "consultarTBLDivisas",
+		},
+		type: "POST",
+		dataType: "text",
+		success : function(data) {
+			if(data==1) {
+				$('#otrDivisas').removeClass('d-none');
+			}
+		}
+	})
+
+	actTabla(data);
+
+	if($('#movil').val()==1) {
+		// Ir arriba atomaticamente
+		$("html, body").animate({ scrollTop: 0 }, "slow");
+	}
+
+	function consultarClte(valor) {
+		cargando('show');
+		tomar_datos = $.ajax({
+			url: "app/DBProcs.php",
+			data: {
+				opcion: "buscarTemporal",
+				idpara: $("#cedulasid option:selected").text().trim()+valor,
+			},
+			type: "POST",
+			dataType: "json",
+			success : function(data) {
+				if(data['recupera']==1) {
+					cabecera         = data['cabecera'];
+					detalle          = data['detalle'];
+					var tot_cantidad = 0;
+					var tot_total    = 0;
+					var tot_subtotal = 0;
+					var tot_costo    = 0;
+					var tot_items    = 0;
+					$.each(detalle, function( i, valor ) {
+						tot_items++;
+						tot_cantidad += valor['CANTIDAD']*1;
+						tot_total    += valor['PRECIO']*valor['CANTIDAD'];
+					})
+					$('#idtemporal').val(cabecera['nrodoc']);
+					var frmcabecera  =
+						'<table cellpadding="1" cellspacing="1" class="w-100 m-0 ml-1 mr-1">' +
+							'<tr style="vertical-align: middle">' +
+								'<th width="30%" class="txtcomp p-1 alert-primary"><i class="fas fa-file-invoice"></i> Pre-Factura #</th>' +
+								'<td width="70%" class="txtcomp p-1 alert-secondary">' + cabecera['nrodoc'] + '</td>' +
+							'</tr>' +
+							'<tr style="vertical-align: middle">' +
+								'<th class="txtcomp p-1 alert-primary"><i class="fas fa-calendar-alt"></i> Fecha</th>' +
+								'<td class="txtcomp p-1 alert-secondary">' + cabecera['FECHA'] + ' (' + cabecera['HORA'] + ')</td>' +
+							'</tr>' +
+							'<tr style="vertical-align: middle">' +
+								'<th class="txtcomp p-1 alert-primary"><i class="fas fa-user"></i> Nombre</th>' +
+								'<td class="txtcomp p-1 alert-secondary">' + cabecera['NOMBRE'] + '</td>' +
+							'</tr>' +
+							'<tr style="vertical-align: middle">' +
+								'<th class="txtcomp p-1 alert-primary"><i class="fas fa-id-badge"></i> Identificación</th>' +
+								'<td class="txtcomp p-1 alert-secondary">' + cabecera['RIF'] + '</td>' +
+							'</tr>' +
+							'<tr style="vertical-align: middle">' +
+								'<th class="txtcomp p-1 alert-primary"><i class="fas fa-phone"></i> Teléfono</th>' +
+								'<td class="txtcomp p-1 alert-secondary">' + cabecera['TELEFONO'] + '</td>' +
+							'</tr>' +
+							'<tr style="vertical-align: middle">' +
+								'<th class="txtcomp p-1 alert-primary"><i class="fas fa-at"></i> e-mail</th>' +
+								'<td class="txtcomp p-1 alert-secondary">' + cabecera['CORREO'] + '</td>' +
+							'</tr>' +
+							'<tr style="vertical-align: middle">' +
+								'<th class="txtcomp p-1 alert-primary"><i class="fas fa-map-marked-alt"></i> Dirección</th>' +
+								'<td class="txtcomp p-1 alert-secondary">' + cabecera['DIRECCION'] + '</td>' +
+							'</tr>' +
+						'</table>';
+
+					$("#detalleFactura").dataTable({
+						scrollY: "27vh",
+						ordering: false,
+						data: detalle,
+						columns: [
+							{ data: 'DESCRIPCION', sClass: "txtcomp text-LEFT align-middle" },
+							{ data: null,
+								render: function(data) {
+									tcantidad = (data.CANTIDAD=='.000')?0:data.CANTIDAD;
+									tdecimal = (tcantidad - parseInt(tcantidad)).toFixed(3).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+									tenteros = parseInt(tcantidad).toFixed(0).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+									return tenteros + '.<sub>' + tdecimal.slice(2) + '</sub>';
+
+								},
+								sClass: "txtcomp text-right align-middle"
+							},
+							{ data: 'PRECIO', sClass: "txtcomp text-right align-middle", render: $.fn.dataTable.render.number(",", ".", 2) },
+							{ data: null,
+								render: function(data) {
+									return parseInt(data.PORC*1)+' %';
+								},
+								sClass: "txtcomp text-right align-middle"
+							},
+							{ data: null,
+								render: function(data) {
+									return (data.PRECIO*data.CANTIDAD).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+								},
+								sClass: "txtcomp text-right align-middle"
+							},
+						],
+						rowCallback: function(row, data) {
+							if($('#movil').val()==1) {
+								var row = $('#detalleFactura').DataTable().row( row );
+								row.child( data.DESCRIPCION ).show();
+								$(this).addClass('txtcomp');
+							}
+						},
+						initComplete: function() {
+							$('#detalleFactura').DataTable().column(0).visible( $('#movil').val()==0 );
+							$('#frmcabecera').html(frmcabecera);
+							$('#VerPre').modal('show');
+							setTimeout(function(){
+								tdecimal = (tot_cantidad - parseInt(tot_cantidad)).toFixed(3).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+								tenteros = parseInt(tot_cantidad).toFixed(0).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+								tot_cantidad = tenteros + '.<sub>' + tdecimal.slice(2) + '</sub>';
+								$('#rtarticulo').html(tot_items)
+								$('#rtcantidad').html(tot_cantidad)
+								$('#rtmonto').html(tot_total.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,'));
+								cargando('hide')
+							}, 300)
+						}
+					});
+				} else {
+					$.ajax({
+						url: "app/DBProcs.php",
+						data: {
+							opcion: "consultarClte",
+							idpara: $("#cedulasid option:selected").text().trim()+valor,
+						},
+						type: "POST",
+						dataType: "json",
+						success: function(data) {
+							if(data.length>0){
+								$('#nomclte').val(data[0]['razon']);
+								$('#telclte').val(data[0]['telefono']);
+								$('#emailclte').val(data[0]['email']);
+								$('#dirclte').val(data[0]['direccion']);
+								crearTemporal(1, data);
+							} else {
+								$('#nomclte').val('');
+								$('#telclte').val('');
+								$('#emailclte').val('');
+								$('#dirclte').val('');
+								$('#nomclte').focus();
+							}
+						}
+					}).done(function(){
+						if($('#movil').val()==1) {
+							$("html, body").animate({ scrollTop: $(document).height() }, "slow");
+						}
+						cargando('hide');
+					});
+				}
+			},
+		})
+	}
+
+	function crearTemporal(tipo, datos) {
+		if(tipo==1) { // Crear cabecera temporal
+			$.ajax({
+				url: "app/DBProcs.php",
+				data: {
+					opcion: "crearTemporalCab",
+					idclte: datos[0]['rif'],
+					nomcte: datos[0]['razon'],
+					telcte: datos[0]['telefono'],
+					emacte: datos[0]['email'],
+					dircte: datos[0]['direccion']
+				},
+				type: "POST",
+				dataType: "json",
+				success : function(data) {
+					$('#idtemporal').val(data);
+					$('#adtemporal').val(1);
+				}
+			}).done(function() {
+				$('#BuscarArti').focus().select();
+				if($('#movil').val()==1) {
+					$("html, body").animate({ scrollTop: $(document).height() }, "slow");
+				}
+			});
+		} else {
+			$.ajax({
+				url: "app/DBProcs.php",
+				data: {
+					opcion: "crearTemporalDet",
+					idtemp: function() { return $('#idtemporal').val() },
+					codart: datos[0]['codigo'],
+					barart: datos[0]['barra'],
+					desart: datos[0]['descripcion'],
+					pvpart: datos[0]['precio'],
+					canart: datos[0]['cantidad'],
+					exiart: datos[0]['existlocal'],
+					pesart: datos[0]['pesado'],
+					preart: datos[0]['precioreal'],
+					impart: datos[0]['impuesto'],
+					cosart: datos[0]['costo']
+				},
+				type: "POST",
+				dataType: "json",
+			});
+		}
+	}
+
+	function recuperar(tipo, opc) {
+		if(tipo==1) {
+			data = new Array();
+			$('#idtemporal').val(cabecera.nrodoc);
+			$('#nomclte').val(cabecera.NOMBRE);
+			$('#telclte').val(cabecera.TELEFONO);
+			$('#emailclte').val(cabecera.CORREO);
+			$('#dirclte').val(cabecera.DIRECCION);
+			$.each(detalle, function(key, value) {
+				value['CANTIDAD'] = value['CANTIDAD']=='.000'?0:value['CANTIDAD'];
+				data.unshift({
+					codigo: value['ARTICULO'],
+					barra: value['BARRA'],
+					descripcion: value['DESCRIPCION'],
+					precio: value['PRECIO'],
+					existlocal: value['EXISTLOCAL'],
+					pesado: value['PESADO'],
+					cantidad: (value['PESADO']==1)?value['CANTIDAD']:parseInt(value['CANTIDAD']),
+					precioreal: value['PRECIOREAL'],
+					impuesto: value['PORC'],
+					costo: value['COSTO'],
+					moneda: value['MONEDA'],
+					factor: value['FACTOR'],
+				})
+			})
+			actTabla(data)
+			$('#adtemporal').val(1);
+			if($('#movil').val()==1) {
+				$("html, body").animate({ scrollTop: $(document).height() }, "slow");
+			}
+			setTimeout(function() {
+				$('#BuscarArti').focus().select();
+			}, 150);
+		} else {
+			$.ajax({
+				url: "app/DBProcs.php",
+				data: {
+					opcion: "eliminarTemporal",
+					idpara: $('#idtemporal').val(),
+				},
+				type: "POST",
+				dataType: "text",
+				success: function(data) {
+					$('#idtemporal').val('');
+					$('#adtemporal').val(0);
+				}
+			}).done(function() {
+				if(opc==1) {
+					consultarClte( $('#idclte').val() );
+				}
+			})
+		}
+	}
+
+	function lstArticulos(buscaren) {
+		cargando('show')
+		tomar_datos = $.ajax({
+			url: "app/DBProcs.php",
+			data: {
+				opcion: "consultaDispo",
+				idpara: (buscaren==1)?$('#BuscarArti').val().trim():$('#BuscarGrp').val().trim(),
+				buscaren: buscaren
+			},
+			type: "POST",
+			dataType: "json",
+			success : function(data) {
+				if(data.length>1){
+					$("#tlstArticulos").dataTable({
+						scrollY: "60vh",
+						scrollCollapse: false,
+						order: [1, 'asc'],
+						searching: true,
+						data: data,
+						columns: [
+							{ data: 'barra' },
+							{ data: 'descripcion' },
+							{ data: 'precio' },
+							{ data: 'existlocal' },
+						],
+						rowCallback: function(row, data) {
+							if($('#movil').val()==1) {
+								var row = $('#tlstArticulos').DataTable().row( row );
+								row.child( data.descripcion ).show();
+								$(this).addClass('txtcomp');
+							}
+						},
+						initComplete: function() {
+							$('#tlstArticulos').DataTable().column(1).visible( $('#movil').val()==0 )
+							$('#TblArt').modal('show');
+							setTimeout(function() {
+								var table = $('#tlstArticulos').DataTable();
+								$('#contTblArt').css( 'display', 'block' );
+								table.columns.adjust().draw();
+							}, 150);
+						}
+					});
+				} else if(data.length==1) {
+					addarticulo(
+						data[0].material,
+						data[0].cbarra,
+						data[0].nombre,
+						data[0].nprecio,
+						data[0].nexistlocal,
+						data[0].pesado,
+						data[0].precioreal,
+						data[0].impuesto,
+						data[0].costo,
+						data[0].moneda,
+						data[0].factor,
+					)
+				} else {
+					msg.fire({
+						title: 'No Existe!!!',
+						icon: 'error',
+						html: 'Artículo o Grupo No Existe!!!',
+						showCancelButton: false,
+						onAfterClose: function() { 
+							if(buscaren==1) {
+								$('#BuscarArti').focus().select();
+							} else {
+								$('#BuscarGrp').focus().select();
+							}
+						}
+					})
+				}
+			}
+		}).done(function() { cargando('hide'); })
+	}
+
+	function actTabla(data) {
+		$('#tbl_consultaDispo').dataTable({
+			scrollY: "60vh",
+			scrollCollapse: false,
+			ordering: false,
+			data: data,
+			searching: true,
+			autoWidth: false,
+			columns: [
+				{ data: null,
+					render: function(data,type,row,meta) {
+						return '<i class="fas fa-trash-alt text-danger" '+
+									'title="Eliminar Artículo" style="cursor: pointer;"'+
+									' onclick="delArticulo('+"'"+data.codigo+"'"+')"></i>&nbsp;'
+								+data.barra
+					},
+					sClass: "txtcomp m-0 p-0 text-left text-nowrap align-middle border border-top-0 border-bottom-0"
+				},
+				{ data: "descripcion",  sClass: "txtcomp m-0 p-0 text-left  align-middle border border-top-0 border-bottom-0" },
+				{ data: "precio",       sClass: "txtcomp m-0 p-0 text-right align-middle border border-top-0 border-bottom-0", render: $.fn.dataTable.render.number(",", ".", 2) },
+				{ data: "existlocal",   sClass: "txtcomp m-0 p-0 text-right align-middle border border-top-0 border-bottom-0", render: $.fn.dataTable.render.number(",", ".", 2) },
+				{ data: null,
+					render: function(data,type,row,meta) {
+						var step = data.pesado==0 ? '1' : '0.001';
+						var only = data.pesado!=0 ? ' ' : 'onkeypress="return event.charCode >= 48 && event.charCode <= 57"';
+						if($('#movil').val()==1) {
+							return	'<div id="txt1'+data.codigo+'" class="d-flex align-items-baseline justify-content-center">'+
+										'<button class="btn btn-warning btn-sm pt-0 pb-0 w-100 font-weight-bold" '+
+											'id="url'+data.codigo+'"'+
+											'onclick="modificaCant('+
+												data.nrodoc+','+"'"+data.codigo+"',"+
+												data.cantidad+",'"+data.descripcion+"'"+','+
+												step+','+data.existlocal+')">' +
+											data.cantidad+
+										'</button>'+
+									'</div>';
+						} else {
+							return	'<input type="number" min="0" max="'+data.existlocal+'" step="'+step+'"'+
+									' onblur = "if( $(this).val()==0 ) { $(this).val([]) };'+
+									'	resaltar(this,0);'+
+									' 	modCantidad('+"'"+data.codigo+"', this.value)"+
+									' " onkeydown="if(event.keyCode==13) '+"{ $('#BuscarArti').focus().select() }"+'"'+
+									' onfocus="resaltar(this,1)"' +
+									' onkeyup="if ($(this).val()>'+data.existlocal+') {'+
+									'	$(this).val('+(data.existlocal<0?null:data.existlocal)+');'+
+									' };" '+
+									only +
+									' id="inpund'+data.codigo+'"'+
+									' value="'+data.cantidad+'" class="p-0 m-0 text-center w-100">';
+						}
+					},
+					sClass: "txtcomp m-0 p-0 text-center align-middle border border-top-0 border-bottom-0",
+				}
+			],
+			rowCallback: function(row, data) {
+				if($('#movil').val()==1) {
+					var row = $('#tbl_consultaDispo').DataTable().row( row );
+					row.child( data.descripcion ).show();
+					$(this).addClass('txtcomp');
+				}
+			},
+			initComplete: function() {
+				$('#tbl_consultaDispo').DataTable().column(1).visible( $('#movil').val()==0 );
+				calTotales();
+				if(data.length==0) {
+					$('#guardarPrefactura').attr('disabled', true);
+				} else {
+					$('#guardarPrefactura').attr('disabled', false);
+				}
+				$('#tbl_consultaDispo').DataTable().columns.adjust().draw();
+			}
+		})
+	}
+
+	function addarticulo(codigo, barra, descripcion, precio, existlocal, pesado, precioreal, impuesto, costo, moneda, factor) {
+		$('#TblArt').modal('hide');
+		if($('#inpund'+codigo).length == 0) {
+			data.unshift({
+				codigo: codigo,
+				barra: barra,
+				descripcion: descripcion,
+				precio: precio,
+				existlocal: existlocal,
+				pesado: pesado,
+				cantidad: 1,
+				precioreal: precioreal,
+				impuesto: impuesto,
+				costo: costo,
+				moneda: moneda,
+				factor: factor,
+			})
+
+			datos = new Array({
+				codigo: codigo,
+				barra: barra,
+				descripcion: descripcion,
+				precio: precio,
+				cantidad: 1,
+				existlocal: existlocal,
+				pesado: pesado,
+				precioreal: precioreal,
+				impuesto: impuesto,
+				costo: costo,
+				moneda: moneda,
+				factor: factor,
+			})
+			crearTemporal(2, datos)
+			actTabla(data);
+		} 
+		
+		setTimeout(function() {
+			$('#inpund'+codigo).focus().select();
+		}, 150);
+	}
+
+	function modCantidad(codigo, valor) {
+		data.map(function(dato) {
+			if(dato.codigo == codigo){
+				dato.cantidad = valor*1;
+			}
+
+			return dato;
+		});
+		$.ajax({
+			url: "app/DBProcs.php",
+			data: {
+				opcion: "modCantidadTmp",
+				idpara: $('#idtemporal').val()+'¬'+codigo+'¬'+valor,
+			},
+			type: "POST",
+			dataType: "json",
+		});
+		calTotales();
+	}
+
+	function modificaCant(nrodoc, codigo, valor, nombre, step, max) {
+		msg.fire({
+			title: 'Modificar Cantidad',
+			icon: 'question',
+			html: 'Modificar Cantidad de:<br><b>'+nombre+'</b><br>Disponible: <b>'+max+'</b>',
+			input: 'number',
+			inputValue: $('#url'+codigo).html(),
+			inputAttributes: {
+				autocapitalize: 'off',
+				max: max,
+				min: step,
+				step: step
+			},
+			inputValidator: (value) => {
+				if (value>max) {
+					return 'Cantidad Disponible: <b>[ ' + max + ' ]</b>';
+				}
+			}
+		}).then((result) => {
+			if (result.value) {
+				modCantidad(codigo, result.value);
+				$('#url'+codigo).html(result.value);
+			}
+		})
+	}
+
+	function calTotales() {
+		var tcantidad = 0;
+		var tarticulo = 0;
+		var tmonto = 0;
+		$.each(data, function(i, valor) {
+			tcantidad += (valor['cantidad']*1);
+			tmonto += (valor['cantidad']*valor['precio']);
+			tarticulo++;
+		})
+
+		tdecimal = (tcantidad - parseInt(tcantidad)).toFixed(3).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+		tenteros = parseInt(tcantidad).toFixed(0).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+		tcantidad = tenteros + '.<sub>' + tdecimal.slice(2) + '</sub>';
+
+		$('#tarticulo').html(tarticulo);
+		$('#tcantidad').html(tcantidad);
+		$('#tmonto').html(tmonto.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,'));
+		$('#montototal').val(tmonto);
+		$('#tbldivisas').html('');
+	}
+
+	function calDivisas() {
+		var tmonto = $('#montototal').val();
+		$.ajax({
+			url: "app/DBProcs.php",
+			data: {
+				opcion: "calDivisas",
+			},
+			type: "POST",
+			dataType: "json",
+			success : function(data) {
+				var tbldivisas = '<table cellspacing="0" cellpadding="0" width="100%">';
+				$.each(data, function(i, valor) {
+					var montod
+					if(valor['multiplica']==1) {
+						montod = (tmonto / valor['factor'])
+					} else {
+						montod = (tmonto * valor['factor'])
+					}
+					tbldivisas +=
+						'<tr>'+
+							'<th>' + valor['simbolo'] + '</th>'+
+							'<td align="right">' + montod.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,') + '</td>'+
+						'</tr>';
+				})
+				tbldivisas += '</table>';
+				$('#tbldivisas').html(tbldivisas);
+			}
+		})
+	}
+
+	function delArticulo(idart) {
+		$.each(data, function(i, valor) {
+			if(valor['codigo']==idart) {
+				data.splice(i, 1);
+				return false;
+			}
+		});
+
+		$.ajax({
+			url: "app/DBProcs.php",
+			data: {
+				opcion: "delArtTmp",
+				idpara: $('#idtemporal').val()+'¬'+idart,
+			},
+			type: "POST",
+			dataType: "json",
+		});
+
+		actTabla(data);
+
+		$('#BuscarArti').focus().select();
+	}
+
+	function resaltar(elem, valor) {
+		if(valor==1) {
+			$(elem).parent().parent().addClass('current-row').animate( { color: 'white', fontWeight: '900' }, '900' );
+		} else {
+			$(elem).parent().parent().removeClass('current-row').animate( { color: 'black', fontWeight: '400' }, '900' );
+		}
+	}
+
+	function savDoc() {
+		var msj = 'Revise la información del Cliente:<br><ul>';
+		var ema = validarEmail( $('#emailclte').val().trim() );
+		var flag = 0;
+		if($('#idclte').val().trim() == '') {
+			flag = 1;
+			msj += '<li>Documento de Identidad</li>';
+		}
+		if($('#nomclte').val().trim() == '') {
+			flag = 1;
+			msj += '<li>Nombre o Razón</li>';
+		}
+		if($('#telclte').val().trim() == '') {
+			flag = 1;
+			msj += '<li>Número de Teléfono</li>';
+		}
+		if(!validarEmail($('#emailclte').val().trim())) {
+			flag = 1;
+			msj += '<li>Correo Electrónico Válido</li>';
+		}
+		if($('#dirclte').val().trim() == '') {
+			flag = 1;
+			msj += '<li>Dirección</li></ul>';
+		}
+		if(flag==1) {
+			msg.fire({
+				title: 'Información Incompleta',
+				icon: 'error',
+				html: '<div align="left">'+msj+'</div>',
+				showCancelButton: false,
+			})
+			return false;
+		}
+		var params = new FormData();
+		params.append('opcion'   , 'guardarPrefactura');
+		params.append('cedulasid', $("#cedulasid option:selected").text().trim());
+		params.append('idclte'   , $('#idclte').val().trim());
+		params.append('nomclte'  , $('#nomclte').val().trim());
+		params.append('telclte'  , $('#telclte').val().trim());
+		params.append('emailclte', $('#emailclte').val().trim());
+		params.append('dirclte'  , $('#dirclte').val().trim());
+		params.append('detalle'  , JSON.stringify(data));
+		params.append('usuario'  , $('#uinombre').val().toUpperCase() + ' (' + $('#uilogin').val() + ')');
+		$.ajax({
+			url         : "app/DBProcs.php",
+			contentType : false,
+			processData : false,
+			cache       : false,
+			data        : params,
+			type        : "POST",
+			dataType    : "json",
+			success : function(data) {
+				if(data!=0) {
+					recuperar(0, 0);
+					var msj = 'Se ha generado la Pre-Factura Nro';
+					msj += '<br><b>' + data + '</b><br>';
+					msj += 'Informe al Cliente el Número'
+					msg.fire({
+						title: 'Pre-Factura Generada',
+						icon: 'info',
+						html: msj,
+						showCancelButton: false,
+					}).then((result) => {
+						if (result.value) {
+							cargarcontenido('prefactura_web');
+						}
+					})					
+				} else {
+					msg.fire({
+						title: 'Error!!!',
+						icon: 'error',
+						html: 'Se presentó un error, no se pudo guardar el documento'
+					})
+				}
+			}
+		})
+	}
+
+	function validarEmail(email) {
+		emailRegex = /^[-\w.%+]{1,64}@(?:[A-Z0-9-]{1,63}\.){1,125}[A-Z]{2,63}$/i;
+		//Se muestra un texto a modo de ejemplo, luego va a ser un icono
+		if (emailRegex.test(email)) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	function limpiarFiltros() {
+		// Se recarga la pagina para inicializar todo
+		if($('#adtemporal').val()==1) {
+			recuperar(0, 0)
+			setTimeout(function() {
+				cargarcontenido('prefactura_web')
+			}, 150);
+		} else {
+			cargarcontenido('prefactura_web');
+		}
+	}
+
+	function validarDatosCte(){
+		switch (true) {
+			case $('#idclte').val().trim()=='':
+				$('#idclte').focus();
+				break;
+			case $('#nomclte').val().trim()=='':
+				$('#nomclte').focus();
+				break;
+			case $('#telclte').val().trim()== '':
+				$('#telclte').focus();
+				break;
+			case $('#emailclte').val().trim()=='':
+				$('#emailclte').focus();
+				break;
+			case $('#dirclte').val().trim()=='':
+				$('#dirclte').focus();
+				break;
+			default:
+				if($('#adtemporal').val()==0) {
+					var data = new Array({
+						'rif': $("#cedulasid option:selected").text().trim()+$('#idclte').val().trim(),
+						'razon': $('#nomclte').val().trim(),
+						'telefono': $('#telclte').val().trim(),
+						'email': $('#emailclte').val().trim(),
+						'direccion':$('#dirclte').val().trim(), 
+					});
+					crearTemporal(1, data)
+				}
+		}
+	}
+</script>

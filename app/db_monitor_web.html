@@ -1,0 +1,166 @@
+<style>
+	.pedidopor {
+		background-color: #FFFFFF !important;
+		border-left: none !important;
+		border-right: none !important;
+		border-top: none !important;
+		border-bottom: 1px solid #000000 !important;
+		padding: 0px;
+		margin: 0px;
+	}
+	.pickingpor {
+		background-color: #FFC107 !important;
+		border-left: none !important;
+		border-right: none !important;
+		border-top: none !important;
+		border-bottom: 1px solid #000000 !important;
+		padding: 0px;
+		margin: 0px;
+	}
+	.procesadopor {
+		background-color: #28A745 !important;
+		color: #FFFFFF !important;
+		border-left: none !important;
+		border-right: none !important;
+		border-top: none !important;
+		border-bottom: 1px solid #000000 !important;
+		padding: 0px;
+		margin: 0px;
+	}
+</style>
+<!-- Main row -->
+<div class="row h-100">
+	<!-- Lista de usuarios -->
+	<div class="col-md-12 col-sm-12 mt-2">
+		<div class="card card-primary elevation-2 border border-dark">
+			<div class="card-header p-2">
+				<i class="fas fa-boxes"></i>
+				<span>Monitor de Ventas WEB</span>
+			</div>
+			<div class="card-body p-0 m-0">
+				<table id="listaDocsweb" class="table" width="100%">
+					<thead class="bg-dark-gradient">
+						<tr>
+							<th width="5%"  class="text-center">Nro.Doc</th>
+							<th width="18%" class="text-center">Fecha</th>
+							<th width="20%" class="text-center">Cliente</th>
+							<th width="7%"  class="text-center">Monto</th>
+							<th width="5%"  class="text-center">F.Pago</th>
+							<th width="15%" class="text-center">Pedido</th>
+							<th width="15%" class="text-center">Picking</th>
+							<th width="15%" class="text-center">x.Facturar</th>
+						</tr>
+					</thead>
+				</table>
+			</div>
+			<!-- /.card-body -->
+		</div>
+		<!-- /.col -->
+	</div>
+	<!-- /.col -->
+</div>
+<!-- /.row (main row 2) -->
+
+<script>
+	$('#listaDocsweb').dataTable( {
+		scrollY: '72vh',
+		scrollCollapse: false,
+		processing: false,
+		ordering: false,
+		ajax: {
+			url: "app/DBProcs.php",
+			data: {
+				opcion: "monitorlistaDocsweb",
+			},
+			type: "POST",
+			dataType: "json",
+		},
+		columns: [
+			{ data: 'nrodoc',     sClass: "txtcomp align-middle text-center" },
+			{ data: null,
+				render: function(data) {
+					var ret = ''
+					if(data.grupoc==0) ret += data.fechapedido;
+					if(data.grupoc==1) ret += data.fechapedido+'<br>'+data.fechapicking;
+					if(data.grupoc==2) ret += data.fechapedido+'<br>'+data.fechapicking+'<br>'+data.fechaprocesado;
+					return ret;
+				},  
+				sClass: "txtcomp text-center align-middle text-nowrap"
+			},
+			{ data: 'nombre',       sClass: "txtcomp align-middle" },
+			{ data: 'monto',        sClass: "txtcomp align-middle text-right", render: $.fn.dataTable.render.number(",", ".", 2) },
+			{ data: 'fpago',        sClass: "txtcomp align-middle" },
+			{ data: 'pedidopor',    sClass: "txtcomp align-middle" },
+			{ data: 'pickingpor',   sClass: "txtcomp align-middle" },
+			{ data: 'procesadopor', sClass: "txtcomp align-middle" },
+		],
+		rowCallback: function( row, data, index ) {
+			switch (true) {
+				case data.grupoc==0:
+					$(row).addClass('pedidopor');
+					break;
+				case data.grupoc==1:
+					$(row).addClass('pickingpor');
+					break;
+				case data.grupoc==2:
+					$(row).addClass('procesadopor');
+					break;
+			}
+			if($('#movil').val()==1) {
+				var row = $('#listaDocsweb').DataTable().row( row );
+				row.child( infoextra(data), classextra(data) ).show();
+				$(this).addClass('txtcomp m-0 p-0 w-100');
+			}
+		}, 
+		initComplete: function() {
+			$('#listaDocsweb').DataTable().column(1).visible( $('#movil').val()==0 );
+			$('#listaDocsweb').DataTable().column(3).visible( $('#movil').val()==0 );
+			$('#listaDocsweb').DataTable().column(4).visible( $('#movil').val()==0 );
+			$('#listaDocsweb').DataTable().column(5).visible( $('#movil').val()==0 );
+			if($('#movil').val()==1) $('#listaDocsweb').removeClass('table')
+		}
+	});
+ 
+	setTimeout('actlistaDocsweb()', 15000);
+
+	function actlistaDocsweb() {
+		if($('#listaDocsweb').is(':visible')) {
+			$('#listaDocsweb').DataTable().ajax.reload( null, false );
+			setTimeout('actlistaDocsweb()', 15000);
+		}
+	}
+
+	function infoextra(d) {
+		if(d.grupoc==0) {
+			var ret = '<span class="mbadge"><i class="fas fa-donate mb-2"></i> '+
+						d.fechapedido+'&emsp;</span><br>'+
+						d.pedidopor;
+		}
+		if(d.grupoc==1) {
+			var ret = '<span class="mbadge"><i class="fas fa-donate mb-2"></i> '+
+						d.fechapedido+'&emsp;<i class="fas fa-cart-arrow-down"></i> '+
+						d.fechapicking+'&emsp;</span><br>'+
+						d.pickingpor;
+		}
+		if(d.grupoc==2) {
+			var ret = '<span class="mbadge"><i class="fas fa-donate mb-2"></i> '+
+						d.fechapedido+'&emsp;<i class="fas fa-cart-arrow-down"></i> '+
+						d.fechapicking+'&emsp;<i class="fas fa-cash-register"></i> '+
+						d.fechaprocesado+'</span><br>'+
+						d.procesadopor;
+		}
+		return ret;
+	}
+
+	function classextra(d) {
+		if(d.grupoc==0) {
+			return 'pedidopor';
+		}
+		if(d.grupoc==1) {
+			return 'pickingpor';
+		}
+		if(d.grupoc==2) {
+			return 'procesadopor';
+		}
+	}
+</script>

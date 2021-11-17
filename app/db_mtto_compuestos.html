@@ -1,0 +1,700 @@
+<style>
+	.th {
+		font-variant: small-caps !important;
+		vertical-align: middle !important;
+		font-weight: lighter !important;
+		text-align: center !important;
+		line-height: 0px !important;
+		height: 18px !important;;
+		padding: 0px !important;
+		margin: 0px !important;
+	}
+
+	table.dataTable tbody td {
+		padding: 0px !important;
+		margin: 0px !important;
+		vertical-align: middle !important;
+	}
+</style>
+<!-- Main row -->
+<div class="row h-100">
+	<!-- Lista de usuarios -->
+	<div class="col-md-12 col-sm-12 p-0 m-0 mt-2">
+		<form action="" onsubmit="return false;" class="col-auto d-flex">
+			<input type="hidden" id="nexist_padre">
+			<input type="hidden" id="hijoagregado">
+			<div class="input-group">
+				<div class="col-10 text-center p-0">
+					<div class="p-0 m-0 alert-secondary"><span class="versales"><b>Datos del Artículo Padre</b></span></div>
+					<table align="center" width="100%">
+						<tr class="alert-secondary">
+							<th width="15%" class="th">Código</th>
+							<th width="28%" class="th">Descripción</th>
+							<th width="15%" class="th">Costo</th>
+							<th width="15%" class="th">Precio</th>
+							<th width="10%" class="th">Exist</th>
+							<th width="7%" class="th">%Hijos</th>
+							<th width="10%" class="th">Disponible</th>
+						</tr>
+						<tr>
+							<td class="txtcomp border text-center text-dark">
+								<input type="number" id="pcodigo" 
+									class="txtcomp form-control form-control-sm w-100 border-0"
+									placeholder="Código Artículo" value=""
+									onkeydown="if(event.keyCode==13 && $(this).val().trim()!='')
+									{ lstArticulos(1); }">
+							</td>
+							<td class="txtcomp border text-center text-dark">
+								<input type="text" id="pdescripcion" 
+									class="txtcomp form-control form-control-sm w-100 border-0"
+									placeholder="Descripción Parcial/Total del Artículo" autocomplete="off" value=""
+									onkeydown="if(event.keyCode==13 && $(this).val().trim()!='')
+									{ lstArticulos(2); }">
+							</td>
+							<td id="pcosto_padre" class="txtcomp border text-center text-dark">
+								0
+							</td>
+							<td id="ppvp_padre" class="txtcomp border text-center text-dark">
+								0
+							</td>
+							<td id="pexist_padre" class="txtcomp border text-center text-dark">
+								0
+							</td>
+							<td class="txtcomp border">
+								<input type="number" min="5" max="90" step="5" id="pporcinv_padre"
+									class="txtcomp form-control form-control-sm	text-center border-0"
+									placeholder="Disponible Para Hijos" value="5"
+									onfocus="$(this).select()">
+							</td>
+							<td id="pdispo_hijos" class="txtcomp border text-center text-dark">
+								0
+							</td>
+						</tr>
+					</table>
+				</div>
+				<div class="col-2 d-flex ml-auto">
+					<button class="btn btn-sm btn-primary mt-auto ml-auto" id="btnconsultar">
+						<i class="fas fa-search"></i> Consultar Hijos
+					</button>
+				</div>
+			</div>
+		</form>
+	</div>
+	<div class="col-md-12 col-sm-12 mt-2">
+		<div class="card card-primary elevation-2 border border-dark">
+			<div class="card-header d-flex p-0 pl-2 align-items-baseline">
+				<span id="ttitulo" class="mr-auto"><i class="fas fa-network-wired"></i> Artículos Hijos del Compuesto</span>
+				<button class="btn btn-sm btn-warning ml-auto" data-toggle="modal" data-target="#agrArtHijo" disabled id="btnArtHijo">
+					<i class="fas fa-plus-circle"></i> Agregar Artículo
+				</button>
+			</div>
+			<div class="card-body p-0 m-0">
+				<table id="listaHijos" class="table-striped table-hover table-bordered" width="100%">
+					<thead class="bg-dark-gradient">
+						<tr>
+							<th width="7%"  rowspan="2">Código</th>
+							<th width="22%" rowspan="2">Descripción Artículo Hijo</th>
+							<th width="7%"  rowspan="2">% Merma</th>
+							<th width="8%"  rowspan="1">Conversión</th>
+							<th width="10%" colspan="2">Valor</th>
+							<th width="16%" colspan="2">% Margen</th>
+							<th width="10%" rowspan="2">Costo</th>
+							<th width="10%" rowspan="2">Precio</th>
+							<th width="10%" rowspan="2">Elim.</th>
+						</tr>
+						<tr>
+							<th width="8%">Kg/Und</th>
+							<th width="5%" title="Empaque">Empa.</th>
+							<th width="5%" title="Mano de Obra">MO</th>
+							<th width="8%">Padre</th>
+							<th width="8%">Hijo</th>
+						</tr>
+					</thead>
+				</table>
+			</div>
+			<!-- /.card-body -->
+		</div>
+		<!-- /.col -->
+	</div>
+	<!-- /.col -->
+</div>
+
+<!-- Modal lista de articulos -->
+<div class="modal fade" id="TblArt" style="z-index: 9888;" tabindex="-1" role="dialog" aria-labelledby="TblArtLabel" aria-hidden="true">
+	<div class="modal-dialog modal-xl modal-dialog-centered">
+		<!-- Modal content-->
+		<div class="modal-content">
+			<div class="modal-header bg-primary pt-1 pb-1">
+				<h4 class="modal-title">Seleccione un Artículo</h4>
+			</div>
+			<div class="modal-body p-1" id="contTblArt">
+				<form action="" onsubmit="return false;" class="form-inline col-12 p-0 m-0 mt-2">
+					<div class="d-flex w-100 align-content-center justify-content-center ml-2 mr-2">
+						<span class="col-1 font-weight-bold">Buscar: </span>
+						<input type="text" class="form-control form-control-sm m-0 ml-1 mr-l p-1 col-11"
+							id="buscarTblArt" value="" autocomplete="off" 
+							placeholder="Buscar Artículo en la Lista...">
+					</div>
+				</form>
+				<table id="tlstArticulos" class="w-100 table table-striped table-hover table-bordered">
+					<thead>
+						<tr>
+							<th width="20%" class="txtcomp text-center bg-warning-gradient">Barra</th>
+							<th width="50%" class="txtcomp text-center bg-warning-gradient">Descripción</th>
+							<th width="10%" class="txtcomp text-center bg-warning-gradient">Existencia</th>
+							<th width="10%" class="txtcomp text-center bg-warning-gradient">Costo</th>
+							<th width="10%" class="txtcomp text-center bg-warning-gradient">Es Padre</th>
+						</tr>
+					</thead>
+				</table>
+			</div>
+			<div class="modal-footer pt-2 pb-2 align-items-end justify-content-end align-top">
+				<button class="btn btn-outline-danger col-3" class="close" data-dismiss="modal" id="btncerrar">
+					Cerrar <i class="fas fa-times-circle"></i>
+				</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- Modal lista de articulos -->
+<div class="modal fade" id="agrArtHijo" style="z-index: 9888;" tabindex="-1" role="dialog" aria-labelledby="agrArtHijoLabel" aria-hidden="true">
+	<div class="modal-dialog modal-lg modal-dialog-centered">
+		<!-- Modal content-->
+		<div class="modal-content">
+			<div class="modal-header bg-primary pt-1 pb-1">
+				<h4 class="modal-title txtcomp">Seleccione un Artículo para Agregarlo a la Lista</h4>
+			</div>
+			<div class="modal-body p-0" id="contagrArtHijo">
+				<form action="" onsubmit="return false;" class="form-inline col-12 p-0 m-0 mt-2">
+					<div class="d-flex w-100 align-content-center justify-content-center ml-2 mr-2">
+						<span class="col-1 font-weight-bold">Buscar: </span>
+						<input type="text" class="form-control form-control-sm m-0 ml-1 mr-l p-1 col-11" id="busagrArtHijo" value=""
+							placeholder="Buscar Artículo en la Lista...">
+					</div>
+				</form>
+				<form action="" onsubmit="return false;" class="p-0 m-0">
+					<table id="lstHijos" class="w-100 table table-striped table-hover table-bordered">
+						<thead>
+							<tr>
+								<th width="10%" class="txtcomp text-center bg-warning-gradient">Código</th>
+								<th width="90%" class="txtcomp text-center bg-warning-gradient">Descripción</th>
+							</tr>
+						</thead>
+					</table>
+				</form>
+			</div>
+			<div class="modal-footer pt-2 pb-2 align-items-end justify-content-end align-top">
+				<button class="btn btn-outline-danger col-3" class="close" data-dismiss="modal" id="btncerrar">
+					Cerrar <i class="fas fa-times-circle"></i>
+				</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+	$('.modal').modal({backdrop: 'static', keyboard: false, show: false})
+	$('.modal').on('hidden.bs.modal', function() { 
+		// se restaura el index del backdrop
+		$('.modal-backdrop').css('zIndex', 8888);
+	});
+	$('input').on('keyup', function(event) {
+		if(event.keyCode>=97 && event.keyCode <=122) {
+			return String.fromCharCode(event.Keycode).toUpperCase()
+		}
+	})
+	$('input').on('blur', function(event) {
+		// convertir en mayuscaulas el nombre
+		$(this).val( $(this).val().toUpperCase() )
+	})
+
+	$('#pcodigo').focus();
+
+	$('#TblArt').on('shown.bs.modal', function() {
+		// buscar
+		$("#buscarTblArt").val('').focus();
+	})
+
+	$("#buscarTblArt").keyup(function(e) {
+		// Buscar en la tabla
+		$('#tlstArticulos').dataTable().fnFilter(this.value);
+	});
+
+	$('#agrArtHijo').on('shown.bs.modal', function() {
+		$('#busagrArtHijo').val('').focus();
+		$('#lstHijos').DataTable().clear().draw();
+		setTimeout(function() {
+			$('#lstHijos').DataTable({ scrollY: "50vh" }).columns.adjust().draw();
+		}, 100);
+	})
+
+	$('#agrArtHijo').on('hidden.bs.modal', function() {
+		if($('#hijoagregado').val()!='') {
+			setTimeout(function() {
+				$('#inpmerma'+$('#hijoagregado').val()).focus()
+			}, 150);
+		}
+	})
+
+	$("#busagrArtHijo").keyup(function(e) {
+		if(e.which == '13') {
+			lstHijos()
+		}
+	});
+
+	$('#pporcinv_padre').blur(function() {
+		$.ajax({
+			url: "app/DBProcs.php",
+			data: {
+				opcion: "guardarPadre",
+				padre: $('#pcodigo').val(),
+				pinvp: $('#pporcinv_padre').val(),
+			},
+			type: "POST",
+			dataType: "json",
+		})
+	})
+
+	$('#pporcinv_padre').keyup(function() {
+		var existpadre = $('#nexist_padre').val() * ($(this).val()/100);
+		var decimales = parseFloat(existpadre) - parseInt(existpadre);
+		var enteros = parseFloat(existpadre) - decimales;
+		var dispohijo = enteros+'<sub>'+decimales.toFixed(3).substr(1)+'</sub>';
+		$('#pdispo_hijos').html( dispohijo );
+	})
+
+	$('#pcodigo').blur(function() {
+		if($(this).val().trim()!='')
+			lstArticulos(1);
+	})
+
+	function lstArticulos(buscaren) {
+		cargando('show')
+		$('#btnArtHijo').attr('disabled', true)
+		tomar_datos = $.ajax({
+			url: "app/DBProcs.php",
+			data: {
+				opcion: "listPadreComptos",
+				idpara: (buscaren==1)?$('#pcodigo').val().trim():$('#pdescripcion').val().trim(),
+				buscaren: buscaren
+			},
+			type: "POST",
+			dataType: "json",
+			success : function(data) {
+				$('#listaHijos').DataTable().clear().draw();
+				if(data.length>1){
+					$("#tlstArticulos").dataTable({
+						scrollY: "50vh",
+						scrollCollapse: false,
+						order: [1, 'asc'],
+						searching: true,
+						data: data,
+						columns: [
+							{ data: 'barra' },
+							{ data: 'descripcion' },
+							{ data: 'exist_padre', sClass: "text-right"},
+							{ data: 'vcosto', sClass: "text-right"},
+							{ data: null,
+								render: function(data) {
+									var check = (data.artpadre==1) ? '<i class="fas fa-check"></i>' : '';
+									return check;
+								},
+								sClass: "text-center"
+							}
+						],
+						rowCallback: function(row, data) {
+							if(data.costo<=0) {
+								$(row).css({'text-decoration': 'line-through', 'font-style': 'italic', 'color': '#929292' }) 
+							}
+						},
+						initComplete: function() {
+							$('#TblArt').modal('show');
+							setTimeout(function() {
+								var table = $('#tlstArticulos').DataTable();
+								$('#contTblArt').css( 'display', 'block' );
+								table.columns.adjust().draw();
+							}, 150);
+						}
+					});
+				} else if(data.length==1) {
+					if(data[0].costo<=0) {
+						msg.fire({
+							title: '!!! A T E N C I Ó N ¡¡¡',
+							icon: 'warning',
+							html: 'Artículo con Costo cero (0), <br>Los artículos sin Costo no se pueden configurar, por favor verifique.',
+							showCancelButton: false,
+						})
+					} else {
+						$('#pcodigo').val(data[0].codigo);
+						$('#pdescripcion').val(data[0].descripcion2);
+						$('#pexist_padre').html(data[0].exist_padre);
+						$('#nexist_padre').val(data[0].exist_padre2);
+						$('#pporcinv_padre').val(data[0].porcinv_padre);
+						$('#pcosto_padre').html(data[0].costo);
+						$('#ppvp_padre').html(data[0].precio);
+						var existpadre = data[0].exist_padre2 * (data[0].porcinv_padre/100);
+						var decimales = parseFloat(existpadre) - parseInt(existpadre);
+						var enteros = parseFloat(existpadre) - decimales;
+						var dispohijo = enteros+'<sub>'+decimales.toFixed(3).substr(1)+'</sub>';
+						$('#pdispo_hijos').html( dispohijo );
+						$('#btnconsultar').click();
+					}
+				} else {
+					msg.fire({
+						title: 'No Existe!!!',
+						icon: 'error',
+						html: 'Artículo No Existe!!!',
+						showCancelButton: false,
+					}).then((result) => {
+						cargarcontenido('mtto_compuestos');
+					})
+				}
+			}
+		}).done(function() { cargando('hide'); })
+	}
+
+	function addarticulo(codigo, barra, descripcion, exist_padre, porcinv_padre, costo, precio, vexist_padre) {
+		if(costo<=0) {
+			msg.fire({
+				title: '!!! A T E N C I Ó N ¡¡¡',
+				icon: 'warning',
+				html: 'Artículo con Costo cero (0), <br>Los artículos sin Costo no se pueden configurar, por favor verifique.',
+				showCancelButton: false,
+			})
+		} else {
+			$('#TblArt').modal('hide');
+			$('#pcodigo').val(codigo);
+			$('#pdescripcion').val(descripcion);
+			$('#nexist_padre').val(exist_padre);
+			$('#pexist_padre').html(vexist_padre);
+			$('#pporcinv_padre').val(porcinv_padre);
+			$('#pcosto_padre').html(costo);
+			$('#ppvp_padre').html(precio);
+			$('#btnconsultar').click();
+		}
+	}
+
+	function lstHijos() {
+		cargando('show')
+		tomar_datos = $.ajax({
+			url: "app/DBProcs.php",
+			data: {
+				opcion: "lstHijos",
+				idpara: $('#busagrArtHijo').val().trim(),
+			},
+			type: "POST",
+			dataType: "json",
+			success : function(data) {
+				if(data.length>0){
+					$("#lstHijos").dataTable({
+						scrollY: "60vh",
+						scrollCollapse: false,
+						order: [1, 'asc'],
+						searching: true,
+						data: data,
+						columns: [
+							{ data: 'codigo' },
+							{ data: 'descripcion' },
+						]
+					});
+				} else {
+					msg.fire({
+						title: 'No Existe!!!',
+						icon: 'error',
+						html: 'Artículo No Existe!!!',
+						showCancelButton: false,
+					})
+				}
+			}
+		}).done(function() { cargando('hide'); })
+	}
+
+	function addHijo(codigo, descripcion) {
+		if($('#marcar'+codigo).length == 0) {
+			$.ajax({
+				url: "app/DBProcs.php",
+				data: {
+					opcion: "agregarHijo",
+					padre : $('#pcodigo').val().trim(),
+					pinvp : $('#pporcinv_padre').val().trim(),
+					hijo  : codigo,
+					merma : 0,
+					empaq : 0,
+					opera : 0,
+					tipo  : 0,
+					relac : 1,
+					renta : 0,
+				},
+				type: "POST",
+				dataType: "json",
+				success : function(data) {
+					if(data==1) {
+						$('#agrArtHijo').modal('hide');
+						$('#listaHijos').DataTable().ajax.reload( null, false );
+						$('#hijoagregado').val(codigo)
+					} else {
+						$('#hijoagregado').val('')
+						msg.fire({
+							title: '!!! A T E N C I Ó N ¡¡¡',
+							icon: 'error',
+							html: 'Hubo un error, no se pudo agregar el Artículo',
+							showCancelButton: false,
+						})
+					}
+				}
+			})
+		} else {
+			$('#agrArtHijo').modal('hide');
+			if($('#marcar'+codigo).is(':checked')) {
+				$('#marcar'+codigo).click();
+			} else {
+				$('#hijoagregado').val(codigo)
+			}
+		}
+	}
+
+	$('#btnconsultar').on('click', function() {
+		if($('#pdescripcion').val().trim() != '' && $('#pporcinv_padre').val() > 0) {
+			$('#listaHijos').DataTable().ajax.reload( null, false );
+			$('#btnArtHijo').attr('disabled', false)
+		}
+	})
+
+	$('#listaHijos').dataTable( {
+		scrollY: '58vh',
+		scrollCollapse: false,
+		autoWidth: false,
+		searching: true,
+		processing: false,
+		ordering: false,
+		ajax: {
+			url: "app/DBProcs.php",
+			data: {
+				opcion: "listaHijos",
+				idpara: function() { return $('#pcodigo').val().trim(); }
+			},
+			type: "POST",
+			dataType: "json",
+		},
+		columns: [
+			{ data: 'codigo',      sClass: "txtcomp text-left   align-middle" },
+			{ data: 'descripcion', sClass: "txtcomp text-left   align-middle" },
+			{ data: null,          sClass: "txtcomp text-center align-middle",
+				render: function (data) {
+					var ret = '<input type="number" min="0" max="100" onfocus="$(this).select()" '+
+							' 	class="p-0 m-0 form-control form-control-sm text-center"'+
+							' 	id="inpmerma'+data.codigo+'" style="height: 25px;" value="'+
+								(data.merma)+'">';
+					if(data.eliminado==0)
+						return ret;
+					else
+						return (data.merma);
+				}
+			},
+			{ data: null, sClass: "txtcomp text-center  align-middle",
+				render: function (data) {
+					var ret = '<input type="number" min="0" step="0.01" onfocus="$(this).select()" '+
+							' 	class="p-0 m-0 form-control form-control-sm text-center"'+
+							' 	id="inprelacion'+data.codigo+'" style="height: 25px;" value="'+
+								(data.relacion).toFixed(2)+'">';
+					if(data.eliminado==0)
+						return ret;
+					else
+						return (data.relacion).toFixed(2);
+				}
+			},
+			{ data: null, sClass: "txtcomp text-center  align-middle",
+				render: function (data) {
+					var ret = '<input type="number" min="0" step="0.01" onfocus="$(this).select()" '+
+							' 	class="txtcomp p-0 m-0 form-control form-control-sm text-center"'+
+							' 	id="inpempaque'+data.codigo+'" style="height: 25px;" value="'+
+								(data.empaque)+'">';
+					if(data.eliminado==0)
+						return ret;
+					else
+						return (data.empaque);
+				}
+			},
+			{ data: null, sClass: "txtcomp text-center  align-middle",
+				render: function (data) {
+					var ret = '<input type="number" min="0" step="0.01" onfocus="$(this).select()" '+
+							' 	class="txtcomp p-0 m-0 form-control form-control-sm text-center"'+
+							' 	id="inpoeprativo'+data.codigo+'" style="height: 25px;" value="'+
+								(data.operativo)+'">';
+					if(data.eliminado==0)
+						return ret;
+					else
+						return (data.operativo);
+				}
+			},
+			{ data: null,
+				render: function(data) {
+					var check = data.tipo==0 ? 'checked' : '';
+					var opcion = 
+						'<div class="custom-control custom-radio custom-control-inline align-items-baseline">'+
+							'<input type="radio" class="custom-control-input" id="rpadre'+data.codigo+'"'+
+							' name="rentabilidad'+data.codigo+'" value="0" '+check+'>'+
+							'<label class="custom-control-label mt-auto mb-auto txtcomp font-weight-normal"'+
+							' for="rpadre'+data.codigo+'">'+
+								(data.rent_padre).toFixed(2)+
+							'</label>'+
+						'</div>';
+					if(data.eliminado==0)
+						return opcion;
+					else
+						return (data.rent_padre).toFixed(2);
+				}
+			},
+			{ data: null, sClass: "txtcomp text-center align-middle",
+				render: function(data) {
+					var check = data.tipo==1 ? 'checked' : '';
+					var opcion = 
+						'<div class="custom-control custom-radio custom-control-inline align-items-baseline">'+
+							'<input type="radio" class="custom-control-input" id="rhijo'+data.codigo+'"'+
+							' name="rentabilidad'+data.codigo+'" value="1" '+check+'>'+
+							'<label class="custom-control-label mt-auto mb-auto" for="rhijo'+data.codigo+'">'+
+							'	<input type="number" min="0" max="100" '+
+							' 		class="p-0 m-0 form-control form-control-sm text-center"'+
+							'		onfocus="$(' + "'#rhijo"+data.codigo+"').prop( 'checked', true );"+'"'+
+							' 		id="inprh'+data.codigo+'" style="height: 25px;" value="'+
+									(data.rent_hijo)+'">'+
+							'</label>'+
+						'</div>';
+					if(data.eliminado==0)
+						return opcion;
+					else
+						return (data.rent_hijo);
+				}
+			},
+			{ data: 'costohijo',  sClass: "txtcomp text-center  align-middle" },
+			{ data: 'preciohijo', sClass: "txtcomp text-center  align-middle" },
+			{ data: null,
+				render: function(data) {
+					var checked = (data.eliminado==1 ? 'checked' : '');
+					var visible = (data.eliminado==0 ? '' : 'd-none');
+					return '<span style="display: none">'+data.eliminado+'</span>'+
+							'<div class="custom-control custom-checkbox">' +
+								'<input type="checkbox" class="custom-control-input" ' +
+								' onclick="eliminarHijo('+data.codigo+')" '+checked+
+								' id="marcar'+data.codigo+'">' +
+								'<label class="custom-control-label font-weight-normal"' +
+								' for="marcar'+data.codigo+'"> </label>' +
+								'<i class="fas fa-save text-primary mt-auto mb-auto '+visible+'" '+
+								' title="Guardar" style="cursor: pointer;"'+
+								' onclick="guardarHijo('+data.codigo+')"></i>&nbsp;&nbsp;&nbsp;'+
+								'<i class="fas fa-trash text-danger mt-auto mb-auto '+visible+'" '+
+								' title="Eliminar Hijo" style="cursor: pointer;"'+
+								' onclick="deleteHijo('+data.codigo+','+"'"+data.descripcion+"'"+')"></i>'+
+							'</div>';
+				},
+			}
+		],
+		rowCallback: function(row, data) {
+			if(data.eliminado==1) {
+				$(row).css({'text-decoration': 'line-through', 'font-style': 'italic', 'color': '#929292' }) 
+			}
+		}
+	})
+
+	function eliminarHijo(id) {
+		marcar = $('#marcar'+id).prop('checked') ? 1 : 0;
+		$.ajax({
+			url: "app/DBProcs.php",
+			data: {
+				opcion: "eliminarHijo",
+				idpara: id+'¬'+marcar+'¬'+$('#pcodigo').val(),
+			},
+			type: "POST",
+			dataType: "json",
+			success : function(data) {
+				if(data==0) {
+					msg.fire({
+						title: '!!! A T E N C I Ó N ¡¡¡',
+						icon: 'error',
+						html: 'Hubo un error no se pudo Modificar el Artículo',
+						showCancelButton: false,
+					})
+				} else {
+					$('#listaHijos').DataTable().ajax.reload( null, false );
+				}		
+			}
+		});
+	}
+
+	function guardarHijo(id) {
+		$.ajax({
+			url: "app/DBProcs.php",
+			data: {
+				opcion: "guardarHijo",
+				idpara: id,
+				padre : $('#pcodigo').val(),
+				pinvp : $('#pporcinv_padre').val(),
+				merma : $('#inpmerma'+id).val(),
+				relac : $('#inprelacion'+id).val(),
+				empaq : $('#inpempaque'+id).val(),
+				opera : $('#inpoeprativo'+id).val(),
+				tipo  : ($('#rhijo'+id).is(':checked'))?1:0,
+				renta : $('#inprh'+id).val()
+			},
+			type: "POST",
+			dataType: "json",
+			success : function(data) {
+				if(data==0) {
+					msg.fire({
+						title: '!!! A T E N C I Ó N ¡¡¡',
+						icon: 'error',
+						html: 'Hubo un error no se pudo Modificar el Artículo',
+						showCancelButton: false,
+					})
+				} else {
+					$('#listaHijos').DataTable().ajax.reload( null, false );
+				}		
+			}
+		});
+	}
+
+	function deleteHijo(id, nombre) {
+		msg.fire({
+			title: '!!! A T E N C I Ó N ¡¡¡',
+			icon: 'question',
+			html: 'Desea eliminar el Hijo<br><b>'+
+				  nombre+'</b>',
+		}).then((result) => {
+			if (result.value) {
+				$.ajax({
+					url: "app/DBProcs.php",
+					data: {
+						opcion: "deleteHijo",
+						hijo  : id,
+						padre : $('#pcodigo').val(),
+					},
+					type: "POST",
+					dataType: "json",
+					success : function(data) {
+						if(data==0) {
+							msg.fire({
+								title: '!!! A T E N C I Ó N ¡¡¡',
+								icon: 'error',
+								html: 'Hubo un error no se pudo Eliminar el Artículo',
+								showCancelButton: false,
+							})
+						} else if(data==1) {
+							$('#listaHijos').DataTable().ajax.reload( null, false );
+						} else {
+							msg.fire({
+								title: '!!! A T E N C I Ó N ¡¡¡',
+								icon: 'info',
+								html: 'Se han eliminados todos los Hijos asociados a <br><b>'+$('#pdescripcion').val()+'</b>'+
+									  '<br>El padre ha sido eliminado también',
+								showCancelButton: false,
+							}).then((result) => {
+								cargarcontenido('mtto_compuestos');
+							})
+						}	
+					}
+				});
+			}
+		})
+	}
+</script>

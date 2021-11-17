@@ -1,0 +1,630 @@
+<!-- Main row -->
+<div class="row">
+	<!-- Despachos WEB Pendientes -->
+	<div class="col-12 mt-2" id="div_tbl_datos">
+		<div class="card card-primary elevation-2 border border-dark pb-1">
+			<div class="card-header txtcomp d-flex p-1 pl-2 mb-1 align-items-baseline">
+				<span id="ttitulo" class="col-6"><i class="fas fa-motorcycle"></i> Despachos Web Pendientes</span>
+				<div class="col-6 d-flex justify-content-end">
+					<div class="col-w-25 text-right mt-auto mb-auto">Nro. Doc:&emsp;</div>
+					<input style="display: none;" placeholder="#Doc.">
+					<input type="number" class="form-control form-control-sm w-25 text-center" id="nrodoc" value=""
+						style="height: 25px" autocomplete="off" placeholder="#Doc."
+						onkeydown="if(event.keyCode==13) { buscarDespacho(this.value) }">
+				</div>
+			</div>
+			<div class="card-body p-0 m-0 w-100">
+				<table width="100%" class="table-striped table-hover table-bordered" id="tbl_DespachosPendientes">
+					<thead>
+						<tr>
+							<th width="5%"  class="text-center txtcomp bg-warning-gradient">Nro.Doc</th>
+							<th width="25%" class="text-center txtcomp bg-warning-gradient">Fecha</th>
+							<th width="15%" class="text-center txtcomp bg-warning-gradient">ID</th>
+							<th width="35%" class="text-center txtcomp bg-warning-gradient">Cliente</th>
+							<th width="15%" class="text-center txtcomp bg-warning-gradient">Teléfono</th>
+							<th width="5%"  class="text-center txtcomp bg-warning-gradient">Opciones</th>
+						</tr>
+					</thead>
+				</table>
+				<table width="100%" class="table-bordered">
+					<tbody>
+						<tr>
+							<th width="10%" style="height: 35px;" class="text-left txtcomp bg-warning">Observaciones:</th>
+							<td width="40%" id="obsclte" class="txtcomp alert-danger">&nbsp;</td>
+							<th width="10%" style="height: 35px;" class="text-left txtcomp bg-warning">Dirección:</th>
+							<td width="40%" id="dirclte" class="txtcomp alert-danger">&nbsp;</td>
+						</tr>
+					</tbody>
+				</table>
+				<table width="100%" class="table-striped table-hover table-bordered" id="tbl_DetalleDespacho">
+					<thead>
+						<tr>
+							<th width="20%" class="text-center txtcomp bg-dark-gradient">Barra</th>
+							<th width="50%" class="text-center txtcomp bg-dark-gradient">Descripción</th>
+							<th width="10%" class="text-center txtcomp bg-dark-gradient">Precio</th>
+							<th width="10%" class="text-center txtcomp bg-dark-gradient">Cantidad</th>
+							<th width="10%" class="text-center txtcomp bg-dark-gradient">Opciones</th>
+						</tr>
+					</thead>
+				</table>
+			</div>
+			<div class="card-footer row p-1 m-0 col-12">
+				<table align="center" class="m-0 p-0 table-bordered col-md-5 col-12" cellpadding="0" cellspacing="0">
+					<tr style="line-height: 1.2em; letter-spacing: -0.8px;" class="bg-dark">
+						<th class="text-center" width="30%">Total Ítems</th>
+						<th class="text-center" width="35%">Total Und./Kg</th>
+						<th class="text-center" width="35%">Monto</th>
+					</tr>
+					<tr style="line-height: 1.2em; letter-spacing: -0.8px;" class="bg-warning-gradient">
+						<th class="text-center" id="tarticulo">&nbsp;</th>
+						<th class="text-center" id="tcantidad">&nbsp;</th>
+						<th class="text-center" id="tmonto">&nbsp;</th>
+					</tr>
+				</table>
+				<button class="btn btn-primary ml-auto mr-auto col-md-3 col-5" data-toggle="modal" data-target="#TblArt" disabled id="agrArt">
+					<i class="fas fa-plus-circle"></i> Agregar Artículo
+				</button>
+				<button class="btn btn-success ml-auto mr-auto col-md-3 col-6" disabled onclick="procDctoweb()" id="procDctoweb">
+					<i class="fas fa-check"></i> Procesar Despacho
+				</button>
+			</div>
+			<!-- /.card-body -->
+		</div>
+	</div>
+	<!-- /.col -->
+</div>
+<!-- /.row (main row 2) -->
+
+<input type="hidden" id="horah">
+<input type="hidden" id="procdocs" value="0">
+
+<!-- Modal lista de articulos -->
+<div class="modal fade" id="TblArt" style="z-index: 9888;" tabindex="-1" role="dialog" aria-labelledby="TblArtLabel" aria-hidden="true">
+	<div class="modal-dialog modal-lg modal-dialog-centered">
+		<!-- Modal content-->
+		<div class="modal-content">
+			<div class="modal-header bg-primary pt-1 pb-1">
+				<h4 class="modal-title txtcomp">Seleccione un Artículo para Agregarlo a la Lista</h4>
+			</div>
+			<div class="modal-body p-0" id="contTblArt">
+				<form action="" onsubmit="return false;" class="form-inline col-12 p-0 m-0 mt-2">
+					<div class="d-flex w-100 align-content-center justify-content-center ml-2 mr-2">
+						<span class="col-1 font-weight-bold">Buscar: </span>
+						<input type="text" class="form-control form-control-sm m-0 ml-1 mr-l p-1 col-11" id="buscarTblArt" value=""
+							placeholder="Buscar Artículo en la Lista...">
+					</div>
+				</form>
+				<form action="" onsubmit="return false;" class="p-0 m-0" id="frmlstart">
+					<table id="tlstArticulos" class="w-100 table table-striped table-hover table-bordered">
+						<thead>
+							<tr>
+								<th width="20%" class="txtcomp text-center bg-warning-gradient">Barra</th>
+								<th width="60%" class="txtcomp text-center bg-warning-gradient">Descripción</th>
+								<th width="10%" class="txtcomp text-center bg-warning-gradient">Precio</th>
+								<th width="10%" class="txtcomp text-center bg-warning-gradient">Exist.</th>
+							</tr>
+						</thead>
+					</table>
+				</form>
+			</div>
+			<div class="modal-footer pt-2 pb-2 align-items-end justify-content-end align-top">
+				<button class="btn btn-outline-danger col-3" class="close" data-dismiss="modal" id="btncerrar">
+					Cerrar <i class="fas fa-times-circle"></i>
+				</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+	$('.modal').modal({backdrop: 'static', keyboard: false, show: false})
+	
+	$('#tbl_DespachosPendientes').dataTable({
+		scrollCollapse: true,
+		autoWidth: false,
+		processing: false,
+		ordering: false,
+		ajax: {
+			url: "app/DBProcs.php",
+			data: {
+				opcion: "despachosWebpendientes",
+				idpara: function() { return $("#nrodoc").val() },
+			},
+			type: "POST",
+			dataType: "json",
+			dataSrc: function(json) {
+				if( json.data.length==0 && $("#nrodoc").val().trim()!='' ) {
+					msg.fire({
+						title: '!!! A T E N C I Ó N ¡¡¡',
+						icon: 'info',
+						html: '<center>Documento '+$("#nrodoc").val().trim()+' no Existe</center>',
+						showCancelButton: false,
+					})
+				}
+				if(json.data.length>0) {
+					$('#obsclte').html(json.data[0].mensaje);
+					$('#dirclte').html(json.data[0].direccion);
+				}
+				return json.data;
+			},
+		},
+		columns: [
+			{ data: 'nrodoc',    sClass: "txtcomp align-middle" },
+			{ data: 'fecha',     sClass: "txtcomp align-middle" },
+			{ data: 'idcliente', sClass: "txtcomp align-middle" },
+			{ data: 'nombre',    sClass: "txtcomp align-middle" },
+			{ data: 'telefono',  sClass: "txtcomp align-middle" },
+			{ data: null, sClass: "text-center" ,
+				render: function(data,type){
+					return '<div class="custom-control custom-checkbox d-flex">' +
+								'<input type="checkbox" class="custom-control-input" ' +
+								' onclick="savCab('+data.nrodoc+')" ' +
+								' id="activa'+data.nrodoc+'">' +
+								'<label class="custom-control-label font-weight-normal mt-auto mb-auto" ' +
+								' for="activa'+data.nrodoc+'">Preparar</label>' +
+							'</div>';
+				}
+			},				
+		],
+		rowCallback: function(row, data) {
+			if($('#movil').val()==1) {
+				var row = $('#tbl_DespachosPendientes').DataTable().row( row );
+				row.child( data.nombre+'&emsp;&#9742; '+data.telefono ).show();
+				$(this).addClass('txtcomp');
+			}
+		},
+		initComplete: function(settings, json) {
+			validarDeta();
+		},
+	});
+
+	$('#tbl_DetalleDespacho').DataTable({ 
+		scrollY: ($('#movil').val()==0)?"44vh":"40vh",
+		processing: false,
+		ordering: false,
+	}).columns.adjust().draw();
+
+	$('#tbl_DetalleDespacho').DataTable().column(1).visible( $('#movil').val()==0 );
+	$('#tbl_DespachosPendientes').DataTable().column(3).visible( $('#movil').val()==0 );
+	$('#tbl_DespachosPendientes').DataTable().column(4).visible( $('#movil').val()==0 );
+
+	$('#nrodoc').focus();
+
+	$('#TblArt').on('shown.bs.modal', function () {
+		$('#buscarTblArt').val('').focus();
+		setTimeout(function() {
+			$('#tlstArticulos').DataTable({ scrollY: "50vh" }).columns.adjust().draw();
+		}, 100);
+	})
+
+	$('#TblArt').on('hide.bs.modal', function () {
+		$('#tlstArticulos').DataTable().clear().draw();
+	})
+
+	$("#buscarTblArt").keyup(function(e) {
+		if(e.which == '13') {
+			lstArticulos()
+		}
+	});
+
+	function lstArticulos() {
+		cargando('show')
+		tomar_datos = $.ajax({
+			url: "app/DBProcs.php",
+			data: {
+				opcion: "consultaDispo",
+				idpara: $('#buscarTblArt').val().trim(),
+				buscaren: 1
+			},
+			type: "POST",
+			dataType: "json",
+			success : function(data) {
+				if(data.length>0){
+					$('#tlstArticulos').dataTable({
+						scrollY: "50vh",
+						scrollCollapse: false,
+						data: data,
+						autoWidth: false,
+						order: [ 1, 'asc'],
+						columns: [
+							{ data: 'barra',       sClass: "txtcomp text-left align-middle" },
+							{ data: 'descripcion', sClass: "txtcomp text-left align-middle" },
+							{ data: 'precio',      sClass: "txtcomp text-right align-middle" },
+							{ data: 'existlocal',  sClass: "txtcomp text-right align-middle", render: $.fn.dataTable.render.number(",", ".", 2) },
+						],
+						rowCallback: function(row, data) {
+							if($('#movil').val()==1) {
+								var row = $('#tlstArticulos').DataTable().row( row );
+								row.child( data.descripcion ).show();
+								$(this).addClass('txtcomp');
+							}
+						},
+						initComplete: function() {
+							$('#tlstArticulos').DataTable().column(1).visible( $('#movil').val()==0 );
+						},
+					});
+				} else {
+					alert('Artículo no Existe!!!');
+				}
+			}
+		}).done(function() { cargando('hide'); })
+	}
+
+	function addarticulo(codigo, barra, descripcion, precio, existlocal, pesado, precioreal, impuesto, costo, moneda, factor) {
+		$('#TblArt').modal('hide');
+		if($('#inpund'+codigo).length == 0) {
+			$.ajax({
+				url: "app/DBProcs.php",
+				data: {
+					opcion: "agregaArtDesp",
+					idpara: $('#nrodoc').val().trim()+'¬'+
+							$('#tbl_DetalleDespacho').DataTable().data().count()+'¬'+
+							codigo+'¬'+barra+'¬'+precio+'¬'+costo+'¬'+impuesto+'¬'+precioreal+'¬'+moneda+'¬'+factor
+				},
+				type: "POST",
+				dataType: "json",
+				success : function(data) {
+					var barradel =  '<i class="fas fa-trash-alt text-danger" '+
+									'title="Eliminar Artículo" style="cursor: pointer;"'+
+									' onclick="delArticulo(this,'+"'"+codigo+"', "+$('#nrodoc').val().trim()+')"></i>&nbsp;'
+									+barra;
+					var rowNode = 
+					$('#tbl_DetalleDespacho').DataTable().row.add({
+						'codigo'   : codigo,
+						'nrodoc'   : $('#nrodoc').val().trim(),
+						'barra'    : barradel,
+						'nombre'   : descripcion,
+						'precio'   : precio,
+						'pesado'   : pesado,
+						'cantidad' : 1,
+						'imai'     : 1,
+					}).draw( false ).node();
+				}
+			}).done(function() {
+				calTotales( $('#nrodoc').val().trim() );
+			})
+		} else {
+			if($('#inpund'+codigo).is(':disabled')) {
+				$('#inpund'+codigo).attr('disabled', false);
+				$('#marcar'+codigo).click();
+			}
+		}
+
+		setTimeout(function() {
+			$('#procDctoweb').attr('disabled', false);
+			$('#inpund'+codigo).focus().select();
+		}, 400);
+	}
+
+	function delArticulo(objeto, codigo) {
+		$.ajax({
+			url: "app/DBProcs.php",
+			data: {
+				opcion: "delArtDesp",
+				idpara: $('#nrodoc').val().trim()+'¬'+codigo
+			},
+			type: "POST",
+			dataType: "json",
+			success : function(data) {
+				if(data==1) {
+					$('#tbl_DetalleDespacho').DataTable().row($(objeto).parents('tr')).remove().draw(false);
+					calTotales( $('#nrodoc').val().trim() );
+				}
+			}
+		})
+	}
+
+	function buscarDespacho(nrodoc) {
+		$('#tbl_DetalleDespacho').dataTable({
+			scrollY: ($('#movil').val()==0)?"44vh":"40vh",
+			processing: false,
+			ordering: false,
+			data: [],
+			autoWidth: false,
+		})
+		$('#tbl_DetalleDespacho').DataTable().column(1).visible( $('#movil').val()==0 );
+		$('#tbl_DespachosPendientes').DataTable().ajax.reload();
+		$('#tbl_DespachosPendientes').DataTable().column(3).visible( $('#movil').val()==0 );
+		$('#tbl_DespachosPendientes').DataTable().column(4).visible( $('#movil').val()==0 );
+		$('#tarticulo').html('&nbsp;');
+		$('#tcantidad').html('&nbsp;');
+		$('#tmonto').html('&nbsp;');
+	}
+
+	function getDeta(nrodoc){
+		cargando('show');
+		tomar_datos = $.ajax({
+				url: "app/DBProcs.php",
+				data: {
+				opcion: "detalleDespachoweb",
+				idpara: nrodoc,
+			},
+			type: "POST",
+			dataType: "json",
+			success : function(data) {
+				$('#tbl_DetalleDespacho').dataTable({
+					scrollY: ($('#movil').val()==0)?"44vh":"40vh",
+					processing: false,
+					ordering: false,
+					data: data,
+					autoWidth: false,
+					columns: [
+						{ data: "barra",    sClass: "txtcomp text-left text-nowrap align-middle" },
+						{ data: "nombre",	sClass: "txtcomp text-left align-middle" },
+						{ data: 'precio',   sClass: "txtcomp text-right align-middle", render: $.fn.dataTable.render.number(",", ".", 2) },
+						{ data: null,
+							render: function(data,type,row,meta){
+								var step = data.pesado==0 ? '1' : '0.001';
+								var disa = data.imai!=1 ? 'disabled' : '';
+								var txt0 = '';
+								var txt1 = '';
+								if(data.imai!=1) {
+									txt0 += '<div id="txt0'+data.codigo+'" class="d-flex align-items-baseline justify-content-center">';
+									txt1 += '<div id="txt1'+data.codigo+'" class="d-none align-items-baseline justify-content-center">';
+								} else {
+									txt0 += '<div id="txt0'+data.codigo+'" class="d-none align-items-baseline justify-content-center">';
+									txt1 += '<div id="txt1'+data.codigo+'" class="d-flex align-items-baseline justify-content-center">';
+								}
+								txt0 += data.cantidad + '</div>';
+								txt1 += '<button class="btn btn-warning btn-sm pt-0 pb-0 w-100 font-weight-bold" '+
+											'id="inpund'+data.codigo+'"'+
+											'onclick="modificaCant('+
+												data.nrodoc+','+"'"+data.codigo+"',"+
+												data.cantidad+",'"+data.nombre+"'"+','+
+												step+')">' +
+											data.cantidad+
+										'</button>'+
+									'</div>';
+
+								if($('#movil').val()==1) {
+									return txt0+txt1
+								} else {
+									return	'<input type="number" min="1" step="'+step+'"'+
+											' onblur = "'+
+											' 	if( $(this).val()==null || $(this).val()==0 ) {' +
+											'		$(this).val(1);'+
+											'	};'+
+											' 	resaltar(this,0);'+
+											'	modCantidad('+data.nrodoc+','+"'"+data.codigo+"', "+' this.value)"'+
+											' onfocus="resaltar(this,1);"' +
+											' id="inpund'+data.codigo+'" '+disa+
+											' value="'+data.cantidad+'" class="p-0 m-0 text-center w-100">';
+								}
+							},
+							sClass: "txtcomp m-0 p-0 text-left  align-middle border border-top-0 border-bottom-0",
+						},
+						{ data: null, sClass: "text-right",
+							render: function(data,type){
+								var checked = (data.imai==1 ? 'checked' : '');
+								return '<div class="custom-control custom-checkbox d-flex">' +
+											'<input type="checkbox" class="custom-control-input chkdespacho" ' +
+											' onclick="savDeta('+data.nrodoc+','+"'"+data.codigo+"'"+')" '+
+											checked +
+											' id="marcar'+data.codigo+'">' +
+											'<label class="custom-control-label font-weight-normal mt-auto mb-auto" ' +
+											' for="marcar'+data.codigo+'">Selec.</label>' +
+										'</div>';
+							}
+						},
+					],
+					rowCallback: function(row, data) {
+						if($('#movil').val()==1) {
+							var row = $('#tbl_DetalleDespacho').DataTable().row( row );
+							row.child( data.nombre ).show();
+							$(this).addClass('txtcomp');
+						}
+					},
+					initComplete: function() {
+						$('#tbl_DetalleDespacho').DataTable().column(1).visible( $('#movil').val()==0 );
+						calTotales( data.nrodoc )
+						validarDeta();
+					},
+				});
+			}
+		}).done(function() { cargando('hide'); });	
+	}
+
+	function savCab(nrodoc) {
+		marcar = $('#activa'+nrodoc).prop('checked') ? 1 : 0;
+		$.ajax({
+				url: "app/DBProcs.php",
+				data: {
+				opcion: "marcarCabeceraweb",
+				idpara: nrodoc+'¬'+marcar+'¬'+$('#uinombre').val().toUpperCase() + ' (' + $('#uilogin').val() + ')',
+			},
+			type: "POST",
+			dataType: "json",
+			success : function(data) {
+				if(data==0) {
+					alert('Hubo un error no se pudo marcar el artículo')
+				}		
+			}
+		}).done(function(){
+			if(marcar==0) {
+				getDeta('');
+				$('#tarticulo').html('&nbsp;');
+				$('#tcantidad').html('&nbsp;');
+				$('#tmonto').html('&nbsp;');
+				$('#agrArt').attr('disabled', false);
+			} else {
+				getDeta(nrodoc);
+				$('#agrArt').attr('disabled', false);
+			}
+		});
+	}
+
+	function modCantidad(nrodoc, codigo, valor) {
+		$('#marcar'+codigo).prop('checked') ? 1 : 0;
+		$.ajax({
+				url: "app/DBProcs.php",
+				data: {
+				opcion: "modCantidadweb",
+				idpara: nrodoc+'¬'+codigo+'¬'+valor,
+			},
+			type: "POST",
+			dataType: "json",
+			success : function(data) {
+				if(data==0) {
+					alert('Hubo un error no se pudo actualizar el artículo')
+				} 
+			}
+		}).done(function() {
+			calTotales(nrodoc)
+		})
+	}
+
+	function modificaCant(nrodoc, codigo, valor, nombre, step) {
+		msg.fire({
+			title: 'Modificar Cantidad',
+			icon: 'question',
+			html: '<b>'+nombre+'</b>',
+			input: 'number',
+			inputValue: $('#inpund'+codigo).html(),
+			inputAttributes: {
+				autocapitalize: 'off',
+				min: step,
+				step: step
+			},
+			onOpen: () => {
+				Swal.getContent().querySelector('.swal2-input').select()
+			}
+		}).then((result) => {
+			if (result.value) {
+				modCantidad(nrodoc, codigo, result.value);
+				$('#inpund'+codigo).html(result.value);
+			}
+		})
+	}
+
+	function savDeta(nrodoc, codigo) {
+		marcar = $('#marcar'+codigo).prop('checked') ? 1 : 0;
+		$.ajax({
+				url: "app/DBProcs.php",
+				data: {
+				opcion: "marcarDetalleweb",
+				idpara: nrodoc+'¬'+codigo+'¬'+marcar,
+			},
+			type: "POST",
+			dataType: "json",
+			success : function(data) {
+				if(data==0) {
+					alert('Hubo un error no se pudo marcar el artículo:' + articulo)
+				}		
+			}
+		}).done(function() {
+			calTotales(nrodoc)
+			if($('#movil').val()==1) {
+				if(marcar==1) {
+					$('#txt0'+codigo).removeClass('d-flex');
+					$('#txt0'+codigo).addClass('d-none');
+					$('#txt1'+codigo).removeClass('d-none');
+					$('#txt1'+codigo).addClass('d-flex');
+				} else {
+					$('#txt1'+codigo).removeClass('d-flex');
+					$('#txt1'+codigo).addClass('d-none');
+					$('#txt0'+codigo).removeClass('d-none');
+					$('#txt0'+codigo).addClass('d-flex');
+				}
+			} else {
+				$('#inpund'+codigo).attr('disabled', marcar!=1);
+			}
+			validarDeta();
+		});
+	}
+
+	function calTotales(nrodoc) {
+		$.ajax({
+			url: "app/DBProcs.php",
+			data: {
+				opcion: "calTotalesDespacho",
+				idpara: nrodoc,
+			},
+			type: "POST",
+			dataType: "json",
+			success : function(data) {
+				$('#tarticulo').html(data['items']);
+				$('#tcantidad').html(data['cantidad']);
+				$('#tmonto').html(data['monto']);
+			}
+		})
+	}
+
+	function validarDeta() {
+		$('#procDctoweb').attr('disabled', true);
+		$('.chkdespacho').each(function() {
+			if( $(this).prop('checked') ) {
+				$('#procDctoweb').attr('disabled', false)
+				calTotales( $("#nrodoc").val().trim() )
+			}
+		});
+	}
+
+	function procDctoweb() {
+		if($('.chkdespacho').length>0) {
+			$('#procdocs').val(1);
+			$('.chkdespacho').each(function() {
+				if( !$(this).prop('checked') ) {
+					$('#procdocs').val(0);
+				}
+			});
+			if($('#procdocs').val()==0) {
+				var msj = 'Hay artículos sin marcar!!';
+				msj += '<br>si continúa se procesará el documento incompleto.';
+				msj += '<br>Este proceso es IRREVERSIBLE';
+				msj += '<br><br>Desea Continuar??';
+				msg.fire({
+					title: '!!!  A T E N C I Ó N  ¡¡¡',
+					icon: 'warning',
+					html: msj,
+				}).then((result) => {
+					if (!result.value) {
+						return false;
+					}
+				})
+			}
+			cargando2('show');
+			var nrodoc = $('#nrodoc').val();
+			$.ajax({
+				url: "app/DBProcs.php",
+				data: {
+					opcion : "procDctoweb",
+					idpara : nrodoc+'¬'+$('#uinombre').val().toUpperCase() + ' (' + $('#uilogin').val() + ')',
+				},
+				type: "POST",
+				dataType: "json",
+				success: function(data) {
+					if (data[0] == 0) { 
+						cargando2('hide');
+						msg.fire({
+							title: 'Error al Guardar',
+							icon: 'error',
+							html: 'Se presentó un Error al guardar el Documento ' + nrodoc,
+							showCancelButton: false,
+						}).then((result) => {
+							if (result.value) {
+								return false;
+							}
+						})
+					}
+				}
+			}).done(function() {
+				msg.fire({
+					title: 'Documento Procesado',
+					icon: 'success',
+					html: 'documento Procesado con Éxito, y disponible para Facturar',
+					showCancelButton: false,
+				})
+				$('#contenido_ppal').load('app/db_despacho_web.html?t=' + moment().format("HH:mm:ss"));
+				cargando2('hide');
+			});
+		}
+	}
+
+	function resaltar(elem, valor) {
+		if(valor==1) {
+			$(elem).parent().parent().addClass('current-row').animate( { color: 'white', fontWeight: '900' }, '900' );
+		} else {
+			$(elem).parent().parent().removeClass('current-row').animate( { color: 'black', fontWeight: '400' }, '900' );
+		}
+	}
+</script>

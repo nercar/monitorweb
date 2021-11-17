@@ -1,0 +1,192 @@
+<style>
+	table tbody tr:hover {
+		background-color: #86CAFF;
+		color: #00237D;
+	}
+
+	table tbody td {
+		padding: 5px 0px 5px 0px;
+	}
+</style>
+<!-- Main row -->
+<div class="row h-100">
+	<!-- Lista de usuarios -->
+	<div class="col-md-12 col-sm-12 p-0 m-0 mt-2">
+		<div class="d-flex align-items-baseline ml-2 mr-2">
+			<input type="text" class="form-control form-control-sm m-0 col-md-5 col-12" id="buscar"
+				value="" placeholder="Buscar en la Lista...">
+			<button class="btn btn-success btn-sm ml-auto" id="btnExport">
+				<i class="fas fa-file-excel fa-lg"></i>&nbsp;&nbsp;Exportar a Excel
+			</button>
+		</div>
+	</div>
+	<div class="col-md-12 col-sm-12 mt-2">
+		<div class="card card-primary elevation-2 border border-dark">
+			<div class="card-header d-flex p-1 pl-2 align-items-baseline">
+				<span id="ttitulo" class="mr-auto"><i class="fas fa-file-invoice-dollar"></i> Lsita de Artículos Compuestos</span>
+			</div>
+			<div class="card-body p-0 m-0">
+				<table id="listaCompuestosCab" class="table-bordered" width="100%">
+					<thead class="bg-dark-gradient">
+						<tr>
+							<th width="10%" class="text-center" rowspan="2">Código Padre</th>
+							<th width="40%" class="text-center" colspan="4">Descripción</th>
+							<th width="10%" class="text-center" title="Existencia Padre">Exist.</th>
+							<th width="10%" class="text-center" title="Porcentaje de Existencia para los Hijos">%Hijos</th>
+							<th width="10%" class="text-center" title="Disponible Hijos">Dispo.</th>
+							<th width="10%" class="text-center">Costo</th>
+							<th width="10%" class="text-center">Precio</th>
+						</tr>
+						<tr class="bg-secondary-gradient">
+							<th class="text-center" width="10%">Cód.Hijo</th>
+							<th class="text-center" width="20%">Descripción</th>
+							<th class="text-center" width="5%"  title="Porcentaje de Merma">%</th>
+							<th class="text-center" width="5%" title="Proporción del Hijo respecto al Padre">Conver.</th>
+							<th class="text-center" width="10%" title="Valor del Empaque">V.Empaq</th>
+							<th class="text-center" width="10%" title="Valor de la Mano de Obra">V.ManoO</th>
+							<th class="text-center" width="10%">Margen</th>
+							<th class="text-center" width="10%">Costo</th>
+							<th class="text-center" width="10%">Precio</th>
+						</tr>
+					</thead>
+				</table>
+				<div style="width: 100%; height: 65vh; overflow: hidden; overflow-y: scroll">
+					<table id="listaCompuestos" class="table-bordered" width="100%">
+						<tbody></tbody>
+					</table>
+				</div>
+			</div>
+			<!-- /.card-body -->
+		</div>
+		<!-- /.col -->
+	</div>
+	<!-- /.col -->
+</div>
+<!-- /.row (main row 2) -->
+
+<script>
+	$.ajax({
+		url: "app/DBProcs.php",
+		data: {
+			opcion: "listaCompuestos",
+		},
+		type: "POST",
+		dataType: "json",
+		success : function(data) {
+			if(data.length>0) {
+				var htmlTags = '';
+				var nompadre = '';
+				$.each( data, function( key, valor ) {
+					if(valor['padre']==1) {
+						nompadre = valor['despadre'];
+						htmlTags += '<tr class="alert-secondary txtcomp">'+
+							'<td width="10%">'+
+								'<span style="display: none">'+
+									valor['codpadre']+valor['codhijo']+nompadre+valor['deshijo']+
+								'</span>'+
+								valor['codpadre']+'</td>'+
+							'<td width="40%" colspan="4">'+valor['despadre']+'</td>'+
+							'<td width="10%" class="text-right">'+valor['exipadre']+'</td>'+
+							'<td width="10%" class="text-right">'+valor['porhijos']+'</td>'+
+							'<td width="10%" class="text-right">'+valor['dishijos']+'</td>'+
+							'<td width="10%" class="text-right">'+valor['cospadre']+'</td>'+
+							'<td width="10%" class="text-right">'+valor['pvppadre']+'</td>';
+					} else {
+						htmlTags += '<tr class="txtcomp">'+
+							'<td width="10%">&nbsp;'+
+								'<span style="display: none">'+
+									valor['codpadre']+valor['codhijo']+nompadre+valor['deshijo']+
+								'</span>'+
+							'</td>'+
+							'<td width="10%">'+valor['codhijo']+'</td>'+
+							'<td width="20%">'+valor['deshijo']+'</td>'+
+							'<td width="5%"  class="text-right">'+valor['mermahijo']+'</td>'+
+							'<td width="5%"  class="text-right">'+valor['canthijo']+'</td>'+
+							'<td width="10%" class="text-right">'+valor['vempaque']+'</td>'+
+							'<td width="10%" class="text-right">'+valor['vmanoo']+'</td>'+
+							'<td width="10%" class="text-right">'+valor['margen']+'</td>'+
+							'<td width="10%" class="text-right">'+valor['costohijo']+'</td>'+
+							'<td width="10%" class="text-right">'+valor['pvphijo']+'</td>';
+					}
+					htmlTags += '</tr>';
+				});
+				$('#listaCompuestos tbody').append(htmlTags);
+			}
+		}
+	})
+
+	$("#buscar").keyup(function() {
+		// Buscar en la tabla
+		var rows = $('#listaCompuestos tr');
+		var contName = $(this).val().trim().toLowerCase();
+
+		$('#listaCompuestos').hide();
+
+		for (i=0; i<=rows.length-1; i++) {
+			$(rows[i]).hide();
+		}
+
+		for (i=0; i<=rows.length-1; i++){
+			var contNameR = rows[i].cells[0].innerHTML.toLowerCase().trim();
+			var show  = false;
+			
+			if(contName.length>0 && contNameR.indexOf(contName)>=0) {
+				show=true;
+			}
+
+			if(contName.length==0) {
+				show=true;
+			}
+
+			if(show) {
+				$(rows[i]).show();
+			}
+		}
+		
+		$('#listaCompuestos').show();
+	});
+
+	$('#btnExport').on('click', function() {
+		cargando('show');
+		tomar_datos = $.ajax({
+			data: { opcion: "exportCompuestos", },
+			type: "POST",
+			dataType: "json",
+			url: "app/DBProcs.php",
+			success: function(data) {
+				fetch(data['enlace'])
+					.then(resp => resp.blob())
+					.then(blob => {
+						const url = window.URL.createObjectURL(blob);
+						const a = document.createElement('a');
+						a.style.display = 'none';
+						a.href = url;
+						// the filename you want
+						a.download = data['archivo'];
+						document.body.appendChild(a);
+						a.click();
+						window.URL.revokeObjectURL(url);
+						$.ajax({
+							data: { 
+								opcion: "borrarArchivoTNS",
+								idpara: data['archivo'],
+							},
+							type: "POST",
+							dataType: "text",
+							url: "app/DBProcs.php",
+						})
+					}).catch(function() {
+						msg.fire({
+							title: 'Error de Descarga',
+							icon: 'error',
+							html: 'Se prsentó un error, no se pudo descargar\n'+data['archivo']+'\nforma automática',
+							footer: '<a id="enlacef" href="' + data['enlace'] + '">' + data['archivo'] + '</a>',
+							showCancelButton: false,
+						})
+					});
+			}
+		}).done(function() {
+			cargando('hide');
+		});
+	});
+</script>

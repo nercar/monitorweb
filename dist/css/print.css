@@ -1,0 +1,121 @@
+* {
+	font-family: sans-serif;
+}
+h1 {
+	text-align: center;
+	margin: 10px 0 10px 0px;
+	text-transform: uppercase;
+	text-decoration: underline;
+}
+
+#contenido {
+	width: 95%;
+	margin: 0px auto;
+	clear: both;
+	font-size: 11px;
+}
+
+.logo_reporte {
+	width: 756px;
+	height:127px;
+	margin-right: 10px;
+	margin-left: 5px; 
+}
+
+.logo_reporte img{
+	width: 756px;
+	height: 127px
+}
+
+.nropedido {
+	text-align: left;
+	font-weight: bold;
+	font-size: 12px;	
+}
+
+.fecha {
+	text-align: right;
+	font-weight: bold;
+	font-size: 12px;	
+}
+
+.titulo {
+	font-weight: bold;
+	font-size: 16px;
+	margin: 0px;
+	text-align: center;
+}
+
+.titulo_segundario {
+	font-weight: bold;
+	margin-right: 10px;
+	margin-left: 5px;
+	font-size: 12px;
+}
+
+.tablacontenido {
+	border: 1px solid #ccc;
+	border-collapse: collapse;
+	width: 95%;
+	margin: 0px auto;
+	font-size: 11px !important;
+}
+
+.tablacontenido th {
+	background: #E7E7E7;
+	font-weight: bold;
+	text-align: center;
+	padding: 6px 3px;
+	border: 1px solid #ccc;
+	font-size: 11px;
+}
+
+.tablacontenido td {
+	padding: 5px 3px;
+	border: 1px solid #ccc;
+}
+
+.tablacontenido .izq {
+	text-align: right;
+	padding: 0 10px 0 0;
+	font-size: 10px;
+}
+
+.tablafechnro {
+	border-collapse: collapse;
+	width: 100%;
+	margin: 0px auto;
+}
+
+.tablafechnro td {
+	padding: 5px 90px;
+	border: 0px solid #ccc;
+}
+
+.salto {
+	page-break-after:always;
+}
+
+.firma {
+	display: block;
+	text-align: center;
+	font-weight: bold;
+	font-size: 12px;
+	margin: 100px 0px 100px 0px;
+}
+
+caption { display: table-caption-group; }
+
+#encabezado {padding:10px 0; border-top: 1px solid; border-bottom: 1px solid; width:100%;}
+#encabezado .fila #col_1 {width: 15%}
+#encabezado .fila #col_2 {text-align:center; width: 55%}
+#encabezado .fila #col_3 {width: 15%}
+#encabezado .fila #col_4 {width: 15%}
+ 
+#encabezado .fila td img {width:50%}
+#encabezado .fila #col_2 #span1{font-size: 15px;}
+#encabezado .fila #col_2 #span2{font-size: 12px; color: #4d9;}
+ 
+#footer {padding-top:5px 0; border-top: 1px solid; width:100%;}
+#footer .fila td {text-align:center; width:100%;}
+#footer .fila td span {font-size: 10px; color: #f5a;}
